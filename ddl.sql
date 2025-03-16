@@ -1,6 +1,6 @@
 -- 1. Create the Database
-CREATE DATABASE IF NOT EXISTS FestivalDB;
-USE FestivalDB;
+CREATE DATABASE IF NOT EXISTS ProjectDB;
+USE ProjectDB;
 
 -- 2. Create Tables for the main entities
 
