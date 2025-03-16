@@ -173,7 +173,10 @@ CREATE TABLE Resale (
     FOREIGN KEY (Ticket_ID) REFERENCES Ticket(Ticket_ID)
 );
 
+-- Business rule: A ticket can be resold only once.
 -- Table: Rating
+
+
 CREATE TABLE Rating (
     Rating_ID INT AUTO_INCREMENT PRIMARY KEY,
     Visitor_ID INT NOT NULL,
