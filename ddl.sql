@@ -175,6 +175,8 @@ CREATE TABLE Resale (
 
 -- Business rule: A ticket can be resold only once.
 -- Table: Rating
+-- Visitor ratings for performances
+-- You can add more fields or normalize this table further based on the rating criteria.
 
 
 CREATE TABLE Rating (
