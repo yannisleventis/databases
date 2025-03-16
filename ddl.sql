@@ -1,6 +1,6 @@
 -- 1. Create the Database
-CREATE DATABASE IF NOT EXISTS MusicFestivalDB;
-USE MusicFestivalDB;
+CREATE DATABASE IF NOT EXISTS MusicFestival;
+USE MusicFestival;
 
 -- 2. Create Tables for the main entities
 
