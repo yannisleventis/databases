@@ -1,11 +1,11 @@
-- Pulse University - Music Festival Database
+Pulse University - Music Festival Database
 
-Project Overview:
+- Project Overview:
 
 Welcome to the "Pulse University" music festival database! This project is designed to manage all essential information related to the festival, including artists, schedules, tickets, venues, and more. 
 The goal is to create an efficient database structure that can support the seamless organization of a music festival.
 
-Features:
+- Features:
 
 Artists: Manage the list of performers, including name, genre, and performance details.
 
@@ -17,7 +17,7 @@ Venues: Manage the different festival venues (stages) and their capacity.
 
 Attendees: Track festival-goers and their purchases.
 
-Technologies Used:
+- Technologies Used:
 
 MariaDB: Relational database management system.
 
