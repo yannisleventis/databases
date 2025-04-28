@@ -1,4 +1,5 @@
 -- 1. Create the Database
+DROP DATABASE IF EXISTS ProjectDB;
 CREATE DATABASE IF NOT EXISTS ProjectDB;
 USE ProjectDB;
 
