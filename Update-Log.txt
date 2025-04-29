@@ -2,6 +2,10 @@
 - Added lookup tables where needed (I believe).
 - Κάθε ticket συσχετίζεται με performance και όχι με event.
 - Added indexes.
+- Resale_queue table + functions
+- Resale buyer interest table
+- Resale sellers table
+- Βαθμολογία Linkern = 1 - 5 => Check constraints
 
 
 Constraints added:
@@ -19,5 +23,23 @@ Constraints added:
 - Κάθε εισιτήριο αφορά μόνο μία συγκεκριμένη παράσταση.
 - Ο επισκέπτης έχει μόνο 1 εισ για 1 συγκεκριμένη παράσταση. Μπορεί να έχει εισ για πολλές παραστάσεις. = cannot buy 2 tickets for 1 performance => added unique key on ticket table.
 - Tickets <= Stage capacity.
+- Stored procedure that checks if a ticket is active or not. (used or not)
+- **(not sure)** Το κόστος των εισιτηρίων διαφέρει ανά ημέρα του φεστιβάλ. Stored procedure for insert ticket (each day different price).
+- Τα VIP εισιτήρια περιορίζονται στο 10% της χωρητικότητας κάθε σκηνής.
+- Procedure: Put ticket on sale
+- Trigger: If sold out => Start resale_queue
+- Trigger: resale interest 2 options: performance and category OR specific ticket => NOT BOTH COMPLETED
+
+- Procedure: Interest for a ticket => add to queue
+- Auto Match procedure: Tickets for resale with interested buyers + Trigger to call it
+- Added both of the above procedures in a single automatch resale procedure.
+
+- Trigger: Before rating check that the ticket is used.
+
+
+
+
+
+
 
 

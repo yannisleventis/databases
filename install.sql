@@ -8,6 +8,7 @@ DROP SCHEMA IF EXISTS musicfestival;
 CREATE SCHEMA musicfestival;
 USE musicfestival;
 
+
 -- Table: Festival
 CREATE TABLE Festival (
     Festival_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -170,6 +171,10 @@ ADD COLUMN Band_ID INT UNSIGNED NULL,
 ADD CONSTRAINT fk_Performance_Artist FOREIGN KEY (Artist_ID) REFERENCES Artist(Artist_ID),
 ADD CONSTRAINT fk_Performance_Band FOREIGN KEY (Band_ID) REFERENCES Band(Band_ID);
 
+-- If sold out: Start resale
+ALTER TABLE Performance
+ADD COLUMN Resale_Active BOOLEAN NOT NULL DEFAULT FALSE;
+
 -- Table: Visitor
 CREATE TABLE Visitor (
     Visitor_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -215,23 +220,77 @@ CREATE TABLE Resale (
     FOREIGN KEY (Ticket_ID) REFERENCES Ticket(Ticket_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 -- Table: Rating
 CREATE TABLE Rating (
     Rating_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
     Visitor_ID INT UNSIGNED NOT NULL,
     Performance_ID INT UNSIGNED NOT NULL,
-    Artist_Interpretation TINYINT,
-    Sound_Lighting TINYINT,
-    Stage_Presence TINYINT,
-    Organization TINYINT,
-    Overall_Impression TINYINT,
+    Artist_Interpretation TINYINT NOT NULL,
+    Sound_Lighting TINYINT NOT NULL,
+    Stage_Presence TINYINT NOT NULL,
+    Organization TINYINT NOT NULL,
+    Overall_Impression TINYINT NOT NULL,
     Rating_Date DATETIME NOT NULL,
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (Rating_ID),
     KEY idx_rating_performance (Performance_ID),
     FOREIGN KEY (Visitor_ID) REFERENCES Visitor(Visitor_ID),
-    FOREIGN KEY (Performance_ID) REFERENCES Performance(Performance_ID)
+    FOREIGN KEY (Performance_ID) REFERENCES Performance(Performance_ID),
+    
+    -- Check constraints για 1-5 βαθμολογίες
+    CONSTRAINT chk_artist_interpretation CHECK (Artist_Interpretation BETWEEN 1 AND 5),
+    CONSTRAINT chk_sound_lighting CHECK (Sound_Lighting BETWEEN 1 AND 5),
+    CONSTRAINT chk_stage_presence CHECK (Stage_Presence BETWEEN 1 AND 5),
+    CONSTRAINT chk_organization CHECK (Organization BETWEEN 1 AND 5),
+    CONSTRAINT chk_overall_impression CHECK (Overall_Impression BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- Table: Resale queue
+CREATE TABLE Resale_Queue (
+    Resale_Queue_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Ticket_ID INT UNSIGNED NOT NULL,
+    Listed_Date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Sale_Status_ID INT UNSIGNED NOT NULL,
+    PRIMARY KEY (Resale_Queue_ID),
+    FOREIGN KEY (Ticket_ID) REFERENCES Ticket(Ticket_ID),
+    FOREIGN KEY (Sale_Status_ID) REFERENCES Resale_Status(Status_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- Table: Buyers
+CREATE TABLE Resale_Buyer_Interest (
+    Interest_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Visitor_ID INT UNSIGNED NOT NULL, -- Ποιος επισκέπτης ενδιαφέρεται
+    Specific_Ticket_ID INT UNSIGNED NULL, -- Συγκεκριμένο εισιτήριο (αν θέλει συγκεκριμένο)
+    Performance_ID INT UNSIGNED NULL,     -- Εναλλακτικά: Παράσταση
+    Category_ID INT UNSIGNED NULL,         -- Και κατηγορία εισιτηρίου (VIP / General κτλ)
+    Interest_Date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (Interest_ID),
+    FOREIGN KEY (Visitor_ID) REFERENCES Visitor(Visitor_ID),
+    FOREIGN KEY (Specific_Ticket_ID) REFERENCES Ticket(Ticket_ID),
+    FOREIGN KEY (Performance_ID) REFERENCES Performance(Performance_ID),
+    FOREIGN KEY (Category_ID) REFERENCES Ticket_Category(Category_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- Table: Sellers
+
+
+CREATE TABLE Resale_Seller_Queue (
+    Seller_Queue_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Ticket_ID INT UNSIGNED NOT NULL,
+    Listed_Date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Sale_Status_ID INT UNSIGNED NOT NULL,
+    PRIMARY KEY (Seller_Queue_ID),
+    FOREIGN KEY (Ticket_ID) REFERENCES Ticket(Ticket_ID),
+    FOREIGN KEY (Sale_Status_ID) REFERENCES Resale_Status(Status_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 -- Table: Image
 CREATE TABLE Image (
@@ -282,6 +341,14 @@ CREATE TABLE Ticket_Status (
     Status_Name VARCHAR(50) NOT NULL,
     PRIMARY KEY (Status_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Resale status
+CREATE TABLE Resale_Status (
+    Status_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Status_Name VARCHAR(50) NOT NULL, -- π.χ. 'available', 'sold'
+    PRIMARY KEY (Status_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 -- Triggers
 
@@ -431,6 +498,46 @@ BEGIN
        OR (NEW.Artist_ID IS NOT NULL AND NEW.Band_ID IS NOT NULL) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Each performance must be linked to exactly one Artist OR one Band.';
+    END IF;
+END //
+
+DELIMITER ;
+
+
+-- Resale queue starts on sold out trigger
+
+
+DELIMITER //
+
+CREATE TRIGGER trg_activate_resale_mode
+AFTER INSERT ON Ticket
+FOR EACH ROW
+BEGIN
+    DECLARE v_Stage_ID INT;
+    DECLARE v_Max_Capacity INT;
+    DECLARE v_Current_Tickets INT;
+
+    -- Βρες Stage_ID της Performance
+    SELECT Stage_ID INTO v_Stage_ID
+    FROM Performance
+    WHERE Performance_ID = NEW.Performance_ID;
+
+    -- Βρες Maximum Capacity της Stage
+    SELECT Maximum_Capacity INTO v_Max_Capacity
+    FROM Stage
+    WHERE Stage_ID = v_Stage_ID;
+
+    -- Πόσα Tickets έχουν πωληθεί για την Performance
+    SELECT COUNT(*)
+    INTO v_Current_Tickets
+    FROM Ticket
+    WHERE Performance_ID = NEW.Performance_ID;
+
+    -- Αν γεμίσαμε -> ενεργοποίησε Resale Mode
+    IF v_Current_Tickets >= v_Max_Capacity THEN
+        UPDATE Performance
+        SET Resale_Active = TRUE
+        WHERE Performance_ID = NEW.Performance_ID;
     END IF;
 END //
 
@@ -727,7 +834,344 @@ END //
 
 DELIMITER ;
 
+
+-- Trigger for VIP tickets <= 10%
+
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_vip_ticket_capacity
+BEFORE INSERT ON Ticket
+FOR EACH ROW
+BEGIN
+    DECLARE v_stage_id INT;
+    DECLARE v_max_capacity INT;
+    DECLARE v_max_vip_tickets INT;
+    DECLARE v_current_vip_tickets INT;
+
+    -- Πάρε Stage_ID του Performance
+    SELECT Stage_ID INTO v_stage_id
+    FROM Performance
+    WHERE Performance_ID = NEW.Performance_ID;
+
+    -- Πάρε Maximum_Capacity της Stage
+    SELECT Maximum_Capacity INTO v_max_capacity
+    FROM Stage
+    WHERE Stage_ID = v_stage_id;
+
+    -- Υπολόγισε 10% της χωρητικότητας
+    SET v_max_vip_tickets = CEIL(v_max_capacity * 0.10);
+
+    -- Μέτρα πόσα VIP εισιτήρια υπάρχουν ήδη για αυτό το Performance
+    SELECT COUNT(*)
+    INTO v_current_vip_tickets
+    FROM Ticket
+    WHERE Performance_ID = NEW.Performance_ID
+      AND Category_ID = (SELECT Category_ID FROM Ticket_Category WHERE Category_Name = 'VIP');
+
+    -- Αν πάμε να ξεπεράσουμε το 10%, πετάμε ERROR
+    IF NEW.Category_ID = (SELECT Category_ID FROM Ticket_Category WHERE Category_Name = 'VIP')
+    AND (v_current_vip_tickets + 1) > v_max_vip_tickets THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = CONCAT('Cannot sell VIP ticket: limit exceeded (', v_current_vip_tickets, '/', v_max_vip_tickets, ').');
+    END IF;
+END //
+
+DELIMITER ;
+
+-- On update
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_vip_ticket_capacity_update
+BEFORE UPDATE ON Ticket
+FOR EACH ROW
+BEGIN
+    DECLARE v_stage_id INT;
+    DECLARE v_max_capacity INT;
+    DECLARE v_max_vip_tickets INT;
+    DECLARE v_current_vip_tickets INT;
+
+    -- Μόνο αν το νέο Category είναι VIP και παλιά δεν ήταν VIP
+    IF NEW.Category_ID != OLD.Category_ID THEN
+    
+        -- Πάρε Stage_ID του Performance
+        SELECT Stage_ID INTO v_stage_id
+        FROM Performance
+        WHERE Performance_ID = NEW.Performance_ID;
+
+        -- Πάρε Maximum_Capacity της Stage
+        SELECT Maximum_Capacity INTO v_max_capacity
+        FROM Stage
+        WHERE Stage_ID = v_stage_id;
+
+        -- Υπολόγισε 10% της χωρητικότητας
+        SET v_max_vip_tickets = CEIL(v_max_capacity * 0.10);
+
+        -- Μέτρα πόσα VIP εισιτήρια υπάρχουν ήδη για αυτό το Performance
+        SELECT COUNT(*)
+        INTO v_current_vip_tickets
+        FROM Ticket
+        WHERE Performance_ID = NEW.Performance_ID
+          AND Category_ID = (SELECT Category_ID FROM Ticket_Category WHERE Category_Name = 'VIP');
+
+        -- Αν το νέο Category είναι VIP και ξεπερνάμε το 10%, πετάμε ERROR
+        IF NEW.Category_ID = (SELECT Category_ID FROM Ticket_Category WHERE Category_Name = 'VIP')
+        AND (v_current_vip_tickets + 1) > v_max_vip_tickets THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = CONCAT('Cannot update to VIP ticket: limit exceeded (', v_current_vip_tickets, '/', v_max_vip_tickets, ').');
+        END IF;
+        
+    END IF;
+END //
+
+DELIMITER ;
+
+
+-- Buyer interest for ticket => 2 options => One is true
+
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_resale_buyer_interest_insert
+BEFORE INSERT ON Resale_Buyer_Interest
+FOR EACH ROW
+BEGIN
+    -- Αν γέμισαν και τα δύο (Specific Ticket + Performance/Category)
+    IF (NEW.Specific_Ticket_ID IS NOT NULL AND (NEW.Performance_ID IS NOT NULL OR NEW.Category_ID IS NOT NULL)) 
+       OR
+       (NEW.Specific_Ticket_ID IS NULL AND (NEW.Performance_ID IS NULL OR NEW.Category_ID IS NULL)) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'You must either specify Specific_Ticket_ID OR (Performance_ID AND Category_ID), but not both or none.';
+    END IF;
+END //
+
+DELIMITER ;
+
+
+-- On update
+
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_resale_buyer_interest_update
+BEFORE UPDATE ON Resale_Buyer_Interest
+FOR EACH ROW
+BEGIN
+    IF (NEW.Specific_Ticket_ID IS NOT NULL AND (NEW.Performance_ID IS NOT NULL OR NEW.Category_ID IS NOT NULL)) 
+       OR
+       (NEW.Specific_Ticket_ID IS NULL AND (NEW.Performance_ID IS NULL OR NEW.Category_ID IS NULL)) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'You must either specify Specific_Ticket_ID OR (Performance_ID AND Category_ID), but not both or none.';
+    END IF;
+END //
+
+DELIMITER ;
+
+
+-- Trigger: Call auto match
+
+-- Trigger όταν ένας νέος πωλητής μπαίνει στην ουρά
+DELIMITER //
+
+CREATE TRIGGER trg_auto_match_after_seller
+AFTER INSERT ON Resale_Seller_Queue
+FOR EACH ROW
+BEGIN
+    CALL match_resale(NULL);
+END //
+
+DELIMITER ;
+
+
+-- Trigger όταν ένας νέος αγοραστής εκδηλώνει ενδιαφέρον
+DELIMITER //
+
+CREATE TRIGGER trg_auto_match_after_buyer
+AFTER INSERT ON Resale_Buyer_Interest
+FOR EACH ROW
+BEGIN
+    CALL match_resale(NULL);
+END //
+
+DELIMITER ;
+
+
+-- Check that rating matches a used ticket
+
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_rating_permission
+BEFORE INSERT ON Rating
+FOR EACH ROW
+BEGIN
+    DECLARE v_Ticket_Status_ID INT;
+    
+    -- Έλεγχος αν υπάρχει ενεργοποιημένο εισιτήριο για το Visitor και την Performance
+    SELECT Ticket_Status_ID
+    INTO v_Ticket_Status_ID
+    FROM Ticket
+    WHERE Visitor_ID = NEW.Visitor_ID
+      AND Event_ID = (SELECT Event_ID FROM Performance WHERE Performance_ID = NEW.Performance_ID)
+    LIMIT 1;
+
+    -- Αν δεν βρέθηκε ή το εισιτήριο δεν είναι "used"
+    IF v_Ticket_Status_ID IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Visitor does not have a ticket for this performance.';
+    END IF;
+    
+    IF v_Ticket_Status_ID != (SELECT Status_ID FROM Ticket_Status WHERE Status_Name = 'used') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ticket is not activated (used). Cannot submit rating.';
+    END IF;
+END //
+
+DELIMITER ;
+
+
+-- Check rating value
+
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_rating_permission
+BEFORE INSERT ON Rating
+FOR EACH ROW
+BEGIN
+    DECLARE v_Ticket_Status_ID INT;
+    
+    -- Έλεγχος αν υπάρχει ΕΝΕΡΓΟΠΟΙΗΜΕΝΟ εισιτήριο για το Visitor και το Event του Performance
+    SELECT Ticket_Status_ID
+    INTO v_Ticket_Status_ID
+    FROM Ticket
+    WHERE Visitor_ID = NEW.Visitor_ID
+      AND Event_ID = (SELECT Event_ID FROM Performance WHERE Performance_ID = NEW.Performance_ID)
+    LIMIT 1;
+
+    -- Αν δεν βρέθηκε ή δεν είναι 'used'
+    IF v_Ticket_Status_ID IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Visitor does not have a ticket for this performance.';
+    END IF;
+    
+    IF v_Ticket_Status_ID != (SELECT Status_ID FROM Ticket_Status WHERE Status_Name = 'used') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ticket is not activated (used). Cannot submit rating.';
+    END IF;
+END //
+
+DELIMITER ;
+
+
+
+
+
+-- Stored Procedures
+
+
+
+-- Check ticket (valid or invalid)
+
+
+DELIMITER //
+
+CREATE PROCEDURE scan_ticket(IN p_Ticket_ID INT)
+BEGIN
+    DECLARE v_Status_Name VARCHAR(50);
+
+    -- Πάρε την κατάσταση του εισιτηρίου
+    SELECT Status_Name INTO v_Status_Name
+    FROM Ticket_Status
+    JOIN Ticket ON Ticket.Ticket_Status_ID = Ticket_Status.Status_ID
+    WHERE Ticket.Ticket_ID = p_Ticket_ID;
+
+    -- Αν είναι ήδη used, ρίξε error
+    IF v_Status_Name = 'used' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ticket has already been used for entry!';
+    ELSE
+        -- Αλλιώς, κάνε update το status σε 'used'
+        UPDATE Ticket
+        SET Ticket_Status_ID = (SELECT Status_ID FROM Ticket_Status WHERE Status_Name = 'used')
+        WHERE Ticket_ID = p_Ticket_ID;
+    END IF;
+END //
+
+DELIMITER ;
+
+
+-- Insert ticker (every day different price)
+
+
+DELIMITER //
+
+CREATE PROCEDURE buy_ticket(
+    IN p_Visitor_ID INT,
+    IN p_Performance_ID INT,
+    IN p_Payment_Method_ID INT,
+    IN p_EAN_Code BIGINT,
+    IN p_Category_ID INT
+)
+BEGIN
+    DECLARE v_Start_Date DATE;
+    DECLARE v_Festival_Start DATE;
+    DECLARE v_Cost DECIMAL(10,2);
+    DECLARE v_Days_Difference INT;
+
+    -- Πάρε την Start_Time της Performance
+    SELECT Start_Time INTO v_Start_Date
+    FROM Performance
+    WHERE Performance_ID = p_Performance_ID;
+
+    -- Πάρε την Start_Date του Festival
+    SELECT Start_Date INTO v_Festival_Start
+    FROM Festival
+    JOIN Event ON Festival.Festival_ID = Event.Festival_ID
+    JOIN Performance ON Event.Event_ID = Performance.Event_ID
+    WHERE Performance.Performance_ID = p_Performance_ID;
+
+    -- Υπολόγισε πόσες μέρες διαφορά
+    SET v_Days_Difference = DATEDIFF(v_Start_Date, v_Festival_Start);
+
+    -- Ορισμός τιμής βάσει ημέρας
+    IF v_Days_Difference = 0 THEN
+        SET v_Cost = 30.00; -- Πρώτη μέρα
+    ELSEIF v_Days_Difference = 1 THEN
+        SET v_Cost = 40.00; -- Δεύτερη μέρα
+    ELSE
+        SET v_Cost = 50.00; -- Από τρίτη μέρα και μετά
+    END IF;
+
+    -- Εισαγωγή εισιτηρίου
+    INSERT INTO Ticket (
+        Visitor_ID,
+        Performance_ID,
+        Purchase_Date,
+        Cost,
+        Payment_Method_ID,
+        EAN_Code,
+        Category_ID,
+        Ticket_Status_ID
+    )
+    VALUES (
+        p_Visitor_ID,
+        p_Performance_ID,
+        NOW(),
+        v_Cost,
+        p_Payment_Method_ID,
+        p_EAN_Code,
+        p_Category_ID,
+        (SELECT Status_ID FROM Ticket_Status WHERE Status_Name = 'active')
+    );
+END //
+
+DELIMITER ;
+
+
 -- Stored procedure for securite/attendance in a performance
+
 
 DELIMITER //
 
@@ -814,6 +1258,190 @@ BEGIN
     END LOOP;
 
     CLOSE cur;
+END //
+
+DELIMITER ;
+
+
+-- Procedure: put ticket on sale
+
+
+DELIMITER //
+
+CREATE PROCEDURE offer_ticket_for_resale(IN p_Ticket_ID INT)
+BEGIN
+    DECLARE v_Status_Name VARCHAR(50);
+
+    -- Βρες την κατάσταση του εισιτηρίου
+    SELECT Status_Name INTO v_Status_Name
+    FROM Ticket_Status
+    JOIN Ticket ON Ticket.Ticket_Status_ID = Ticket_Status.Status_ID
+    WHERE Ticket.Ticket_ID = p_Ticket_ID;
+
+    -- Αν είναι ήδη used ➔ ERROR
+    IF v_Status_Name = 'used' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot resale a used ticket!';
+    ELSE
+        -- Αν είναι ενεργό (active), τότε καταχωρείται στη Resale Queue
+        INSERT INTO Resale_Queue (Ticket_ID)
+        VALUES (p_Ticket_ID);
+    END IF;
+END //
+
+DELIMITER ;
+
+
+-- Interest for a ticket
+
+
+DELIMITER //
+
+CREATE PROCEDURE create_resale_interest(
+    IN p_Visitor_ID INT,
+    IN p_Specific_Ticket_ID INT,
+    IN p_Performance_ID INT,
+    IN p_Category_ID INT
+)
+BEGIN
+    -- Λογικός έλεγχος: πρέπει να δώσει ΜΟΝΟ ΕΝΑΝ τύπο ενδιαφέροντος
+    IF (p_Specific_Ticket_ID IS NOT NULL AND (p_Performance_ID IS NOT NULL OR p_Category_ID IS NOT NULL))
+        OR (p_Specific_Ticket_ID IS NULL AND (p_Performance_ID IS NULL OR p_Category_ID IS NULL)) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'You must either specify a Specific Ticket OR (Performance and Category), but not both or none.';
+    ELSE
+        INSERT INTO Resale_Buyer_Interest (
+            Visitor_ID,
+            Specific_Ticket_ID,
+            Performance_ID,
+            Category_ID
+        )
+        VALUES (
+            p_Visitor_ID,
+            p_Specific_Ticket_ID,
+            p_Performance_ID,
+            p_Category_ID
+        );
+    END IF;
+END //
+
+DELIMITER ;
+
+
+-- Automatch Resale ticket with buyer and seller.
+
+
+DELIMITER //
+
+CREATE PROCEDURE match_resale(IN p_Ticket_ID INT)
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_Ticket_ID INT;
+    DECLARE v_Performance_ID INT;
+    DECLARE v_Category_ID INT;
+    DECLARE v_Buyer_Visitor_ID INT;
+    DECLARE v_Seller_Queue_ID INT;
+
+    -- Cursor για να διαβάσει όλους τους διαθέσιμους πωλητές αν δεν δοθεί συγκεκριμένο εισιτήριο
+    DECLARE seller_cursor CURSOR FOR
+        SELECT Seller_Queue_ID, Ticket_ID
+        FROM Resale_Seller_Queue
+        WHERE Sale_Status_ID = (SELECT Status_ID FROM Resale_Status WHERE Status_Name = 'available')
+        ORDER BY Listed_Date ASC;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Αν δώθηκε συγκεκριμένο εισιτήριο
+    IF p_Ticket_ID IS NOT NULL THEN
+
+        -- Βρες Performance και Category
+        SELECT Event_ID, Category_ID
+        INTO v_Performance_ID, v_Category_ID
+        FROM Ticket
+        WHERE Ticket_ID = p_Ticket_ID;
+        
+        -- Βρες αγοραστή που το ζητάει
+        SELECT Visitor_ID
+        INTO v_Buyer_Visitor_ID
+        FROM Resale_Buyer_Interest
+        WHERE (Specific_Ticket_ID = p_Ticket_ID 
+            OR (Performance_ID = v_Performance_ID AND Category_ID = v_Category_ID))
+        ORDER BY Interest_Date ASC
+        LIMIT 1;
+
+        IF v_Buyer_Visitor_ID IS NOT NULL THEN
+            -- Κάνε μεταβίβαση
+            UPDATE Ticket
+            SET Visitor_ID = v_Buyer_Visitor_ID
+            WHERE Ticket_ID = p_Ticket_ID;
+
+            -- Σήμανε ότι πουλήθηκε στο Seller Queue
+            UPDATE Resale_Seller_Queue
+            SET Sale_Status_ID = (SELECT Status_ID FROM Resale_Status WHERE Status_Name = 'sold')
+            WHERE Ticket_ID = p_Ticket_ID;
+
+            -- Αν υπάρχει και στη Resale Queue update
+            UPDATE Resale_Queue
+            SET Sale_Status_ID = (SELECT Status_ID FROM Resale_Status WHERE Status_Name = 'sold')
+            WHERE Ticket_ID = p_Ticket_ID;
+
+            -- Σβήσε τον αγοραστή
+            DELETE FROM Resale_Buyer_Interest
+            WHERE Visitor_ID = v_Buyer_Visitor_ID
+              AND (Specific_Ticket_ID = p_Ticket_ID 
+                  OR (Performance_ID = v_Performance_ID AND Category_ID = v_Category_ID));
+        END IF;
+
+    ELSE 
+        -- Αν δεν δώθηκε Ticket_ID ➔ scan όλους τους διαθέσιμους sellers
+        OPEN seller_cursor;
+
+        read_loop: LOOP
+            FETCH seller_cursor INTO v_Seller_Queue_ID, v_Ticket_ID;
+            IF done THEN
+                LEAVE read_loop;
+            END IF;
+
+            -- Βρες Performance και Category
+            SELECT Event_ID, Category_ID
+            INTO v_Performance_ID, v_Category_ID
+            FROM Ticket
+            WHERE Ticket_ID = v_Ticket_ID;
+
+            -- Βρες αγοραστή
+            SELECT Visitor_ID
+            INTO v_Buyer_Visitor_ID
+            FROM Resale_Buyer_Interest
+            WHERE (Specific_Ticket_ID = v_Ticket_ID 
+                OR (Performance_ID = v_Performance_ID AND Category_ID = v_Category_ID))
+            ORDER BY Interest_Date ASC
+            LIMIT 1;
+
+            IF v_Buyer_Visitor_ID IS NOT NULL THEN
+                -- Μεταβίβασε
+                UPDATE Ticket
+                SET Visitor_ID = v_Buyer_Visitor_ID
+                WHERE Ticket_ID = v_Ticket_ID;
+
+                -- Σήμανε πουλήθηκε
+                UPDATE Resale_Seller_Queue
+                SET Sale_Status_ID = (SELECT Status_ID FROM Resale_Status WHERE Status_Name = 'sold')
+                WHERE Seller_Queue_ID = v_Seller_Queue_ID;
+
+                UPDATE Resale_Queue
+                SET Sale_Status_ID = (SELECT Status_ID FROM Resale_Status WHERE Status_Name = 'sold')
+                WHERE Ticket_ID = v_Ticket_ID;
+
+                -- Σβήσε τον αγοραστή
+                DELETE FROM Resale_Buyer_Interest
+                WHERE Visitor_ID = v_Buyer_Visitor_ID
+                  AND (Specific_Ticket_ID = v_Ticket_ID 
+                      OR (Performance_ID = v_Performance_ID AND Category_ID = v_Category_ID));
+            END IF;
+        END LOOP;
+
+        CLOSE seller_cursor;
+    END IF;
 END //
 
 DELIMITER ;
