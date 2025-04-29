@@ -743,6 +743,7 @@ CREATE TRIGGER trg_check_stage_capacity
 BEFORE INSERT ON Ticket
 FOR EACH ROW
 BEGIN
+    DECLARE msg TEXT;
     DECLARE v_stage_id INT;
     DECLARE v_max_capacity INT;
     DECLARE v_current_tickets INT;
@@ -764,7 +765,6 @@ BEGIN
 
     -- Αν είναι πλήρης, σκάσε ERROR
     IF (v_current_tickets + 1) > v_max_capacity THEN
-        DECLARE msg TEXT;
         SET msg = CONCAT('Cannot sell ticket: stage capacity exceeded (', v_current_tickets, '/', v_max_capacity, ').');
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = msg;
@@ -782,6 +782,7 @@ CREATE TRIGGER trg_check_stage_capacity_update
 BEFORE UPDATE ON Ticket
 FOR EACH ROW
 BEGIN
+    DECLARE msg TEXT;
     DECLARE v_stage_id INT;
     DECLARE v_max_capacity INT;
     DECLARE v_current_tickets INT;
@@ -806,7 +807,6 @@ BEGIN
 
         -- Αν ξεπερνάμε τη χωρητικότητα, σκάμε ERROR
         IF (v_current_tickets + 1) > v_max_capacity THEN
-            DECLARE msg TEXT;
             SET msg = CONCAT('Cannot update ticket: stage capacity exceeded (', v_current_tickets, '/', v_max_capacity, ').');
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = msg;
@@ -849,6 +849,7 @@ CREATE TRIGGER trg_check_vip_ticket_capacity
 BEFORE INSERT ON Ticket
 FOR EACH ROW
 BEGIN
+    DECLARE msg TEXT;
     DECLARE v_stage_id INT;
     DECLARE v_max_capacity INT;
     DECLARE v_max_vip_tickets INT;
@@ -877,7 +878,6 @@ BEGIN
     -- Αν πάμε να ξεπεράσουμε το 10%, πετάμε ERROR
     IF NEW.Category_ID = (SELECT Category_ID FROM Ticket_Category WHERE Category_Name = 'VIP')
     AND (v_current_vip_tickets + 1) > v_max_vip_tickets THEN
-        DECLARE msg TEXT;
         SET msg = CONCAT('Cannot sell VIP ticket: limit exceeded (', v_current_vip_tickets, '/', v_max_vip_tickets, ').');
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = msg;
@@ -894,6 +894,7 @@ CREATE TRIGGER trg_check_vip_ticket_capacity_update
 BEFORE UPDATE ON Ticket
 FOR EACH ROW
 BEGIN
+    DECLARE msg TEXT;
     DECLARE v_stage_id INT;
     DECLARE v_max_capacity INT;
     DECLARE v_max_vip_tickets INT;
@@ -925,7 +926,6 @@ BEGIN
         -- Αν το νέο Category είναι VIP και ξεπερνάμε το 10%, πετάμε ERROR
         IF NEW.Category_ID = (SELECT Category_ID FROM Ticket_Category WHERE Category_Name = 'VIP')
         AND (v_current_vip_tickets + 1) > v_max_vip_tickets THEN
-            DECLARE msg TEXT;
             SET msg = CONCAT('Cannot update to VIP ticket: limit exceeded (', v_current_vip_tickets, '/', v_max_vip_tickets, ').');
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = msg;
@@ -1186,6 +1186,7 @@ DELIMITER //
 
 CREATE PROCEDURE validate_security_for_performance(IN p_Performance_ID INT)
 BEGIN
+    DECLARE msg TEXT;
     DECLARE v_Stage_ID INT;
     DECLARE v_Max_Capacity INT;
     DECLARE v_Required_Security INT;
@@ -1223,14 +1224,12 @@ BEGIN
 
     -- Έλεγχος
     IF v_Security_Count < v_Required_Security THEN
-        DECLARE msg TEXT;
         SET msg = CONCAT('Not enough security personnel: ', v_Security_Count, '/', v_Required_Security, ' required.');
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = msg;
     END IF;
 
     IF v_Support_Count < v_Required_Support THEN
-        DECLARE msg TEXT;
         SET msg = CONCAT('Not enough support personnel: ', v_Support_Count, '/', v_Required_Support, ' required.');
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = msg; 
