@@ -8,42 +8,66 @@ DROP SCHEMA IF EXISTS musicfestival;
 CREATE SCHEMA musicfestival;
 USE musicfestival;
 
+-- Lookup Tables
 
--- Table: Festival
-CREATE TABLE Festival (
-    Festival_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Year INT NOT NULL,
-    Start_Date DATE NOT NULL,
-    End_Date DATE NOT NULL,
-    Daily_Max_Duration INT NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Festival_ID),
-    UNIQUE KEY uq_festival_year (Year), -- Each year can have only 1 pulse university festival.
-    KEY idx_festival_year (Year)
+-- Table: Performance_Type
+CREATE TABLE Performance_Type (
+    Performance_Type_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Performance_Type VARCHAR(50) NOT NULL,
+    PRIMARY KEY (Performance_Type_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table: Location
-CREATE TABLE Location (
-    Location_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Location_Address VARCHAR(255) NOT NULL,
-    Geo_Coordinates VARCHAR(50),
-    City VARCHAR(100),
-    Country VARCHAR(100),
-    Continent_ID INT UNSIGNED NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Location_ID),
-    FOREIGN KEY (Continent_ID) REFERENCES Continent(Continent_ID)
+-- Table: Continent
+CREATE TABLE Continent (
+    Continent_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Continent_Name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (Continent_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table: FestivalLocation
-CREATE TABLE FestivalLocation (
-    Festival_ID INT UNSIGNED NOT NULL,
-    Location_ID INT UNSIGNED NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Festival_ID, Location_ID),
-    FOREIGN KEY (Festival_ID) REFERENCES Festival(Festival_ID),
-    FOREIGN KEY (Location_ID) REFERENCES Location(Location_ID)
+-- Table: Experience_Level
+CREATE TABLE Experience_Level (
+    Level_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Level_Name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (Level_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: Personnel_Role
+CREATE TABLE Personnel_Role (
+    Role_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Personnel_Role VARCHAR(50) NOT NULL,
+    PRIMARY KEY (Role_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: Payment_Method
+CREATE TABLE Payment_Method (
+    Method_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Method_Name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (Method_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: Ticket_Category
+CREATE TABLE Ticket_Category (
+    Category_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Category_Name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (Category_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: Ticket_Status
+CREATE TABLE Ticket_Status (
+    Status_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Status_Name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (Status_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Resale status
+CREATE TABLE Resale_Status (
+    Status_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Status_Name VARCHAR(50) NOT NULL, 
+    -- π.χ. 'available', 'sold'
+    PRIMARY KEY (Status_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Tables with no foreign keys
 
 -- Table: Stage
 CREATE TABLE Stage (
@@ -54,6 +78,107 @@ CREATE TABLE Stage (
     Technical_Requirements TEXT,
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (Stage_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: Equipment
+CREATE TABLE Equipment (
+    Equipment_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Description TEXT,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Equipment_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: Artist
+CREATE TABLE Artist (
+    Artist_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    First_Name VARCHAR(50) NOT NULL,
+    Last_Name VARCHAR(50) NOT NULL,
+    Stage_Name VARCHAR(50),
+    Date_of_Birth DATE,
+    Website VARCHAR(255),
+    Instagram VARCHAR(255),
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Artist_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: Band
+CREATE TABLE Band (
+    Band_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Band_Name VARCHAR(100) NOT NULL,
+    Formation_Date DATE,
+    Website VARCHAR(255),
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Band_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: Visitor
+CREATE TABLE Visitor (
+    Visitor_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    First_Name VARCHAR(45) NOT NULL,
+    Last_Name VARCHAR(45) NOT NULL,
+    Email VARCHAR(320),
+    Phone_Number VARCHAR(20),
+    Age INT,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Visitor_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Tables that reference lookup tables
+
+-- Table: Location
+CREATE TABLE Location (
+    Location_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Location_Address VARCHAR(255) NOT NULL,
+    Longitude FLOAT(10,7) NOT NULL,
+    Latitude FLOAT(10,7) NOT NULL,
+    City VARCHAR(100),
+    Country VARCHAR(100),
+    Continent_ID INT UNSIGNED NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Location_ID),
+    FOREIGN KEY (Continent_ID) REFERENCES Continent(Continent_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: ArtistBand
+CREATE TABLE ArtistBand (
+    Artist_ID INT UNSIGNED NOT NULL,
+    Band_ID INT UNSIGNED NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Artist_ID, Band_ID),
+    KEY idx_artistband_band (Band_ID),
+    FOREIGN KEY (Artist_ID) REFERENCES Artist(Artist_ID),
+    FOREIGN KEY (Band_ID) REFERENCES Band(Band_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table: Personnel
+CREATE TABLE Personnel (
+    Personnel_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Personnel_Name VARCHAR(90) NOT NULL,
+    Age INT,
+    Personnel_Role_ID INT UNSIGNED NOT NULL,
+    Experience_Level_ID INT UNSIGNED NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Personnel_ID),
+    FOREIGN KEY (Personnel_Role_ID) REFERENCES Personnel_Role(Role_ID),
+    FOREIGN KEY (Experience_Level_ID) REFERENCES Experience_Level(Level_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Rest of the tables
+
+-- Table: Festival
+CREATE TABLE Festival (
+    Festival_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Location_ID INT UNSIGNED NOT NULL,
+    Name VARCHAR(50) NOT NULL,
+    Start_Date DATE NOT NULL,
+    End_Date DATE NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Festival_ID),
+    FOREIGN KEY (Location_ID) REFERENCES Location(Location_ID),
+    UNIQUE KEY uq_festival_year (Start_Date),
+    -- Each year can have only 1 pulse university festival.
+    KEY idx_festival_year (Start_Date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table: Event
@@ -75,27 +200,21 @@ CREATE TABLE Event (
 CREATE TABLE Performance (
     Performance_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
     Event_ID INT UNSIGNED NOT NULL,
-    Performance_Type VARCHAR(50) NOT NULL,
+    Stage_ID INT UNSIGNED NOT NULL,
+    Performance_Type_ID INT UNSIGNED NOT NULL,
     Start_Time DATETIME NOT NULL,
     Duration INT NOT NULL CHECK (Duration <= 180),
     Break_Duration INT,
-    Stage_ID INT UNSIGNED NOT NULL,
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (Performance_ID),
     KEY idx_performance_event (Event_ID),
     FOREIGN KEY (Event_ID) REFERENCES Event(Event_ID),
     FOREIGN KEY (Stage_ID) REFERENCES Stage(Stage_ID),
-    UNIQUE KEY uq_stage_starttime (Stage_ID, Start_Time) -- Each Stage ID must have unique start time
+    FOREIGN KEY (Performance_Type_ID) REFERENCES Performance_Type(Performance_Type_ID),
+    UNIQUE KEY uq_stage_starttime (Event_ID, Start_Time)
+    -- Each Stage ID must have unique start time
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table: Equipment
-CREATE TABLE Equipment (
-    Equipment_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(100) NOT NULL,
-    Description TEXT,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Equipment_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table: StageEquipment
 CREATE TABLE StageEquipment (
@@ -109,18 +228,6 @@ CREATE TABLE StageEquipment (
     FOREIGN KEY (Equipment_ID) REFERENCES Equipment(Equipment_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table: Personnel
-CREATE TABLE Personnel (
-    Personnel_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Personnel_Name VARCHAR(90) NOT NULL,
-    Age INT,
-    Personnel_Role VARCHAR(45) NOT NULL,
-    Experience_Level_ID INT UNSIGNED NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Personnel_ID),
-    FOREIGN KEY (Experience_Level_ID) REFERENCES Experience_Level(Level_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 -- Table: PerformancePersonnel
 CREATE TABLE PerformancePersonnel (
     Performance_ID INT UNSIGNED NOT NULL,
@@ -132,38 +239,6 @@ CREATE TABLE PerformancePersonnel (
     FOREIGN KEY (Personnel_ID) REFERENCES Personnel(Personnel_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table: Artist
-CREATE TABLE Artist (
-    Artist_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Artist_Name VARCHAR(100) NOT NULL,
-    Date_of_Birth DATE,
-    Website VARCHAR(255),
-    Instagram VARCHAR(255),
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Artist_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Table: Band
-CREATE TABLE Band (
-    Band_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Band_Name VARCHAR(100) NOT NULL,
-    Formation_Date DATE,
-    Website VARCHAR(255),
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Band_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Table: ArtistBand
-CREATE TABLE ArtistBand (
-    Artist_ID INT UNSIGNED NOT NULL,
-    Band_ID INT UNSIGNED NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Artist_ID, Band_ID),
-    KEY idx_artistband_band (Band_ID),
-    FOREIGN KEY (Artist_ID) REFERENCES Artist(Artist_ID),
-    FOREIGN KEY (Band_ID) REFERENCES Band(Band_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 -- Alter Table: Performance (add Artist and Band)
 ALTER TABLE Performance
 ADD COLUMN Artist_ID INT UNSIGNED NULL,
@@ -172,38 +247,29 @@ ADD CONSTRAINT fk_Performance_Artist FOREIGN KEY (Artist_ID) REFERENCES Artist(A
 ADD CONSTRAINT fk_Performance_Band FOREIGN KEY (Band_ID) REFERENCES Band(Band_ID);
 
 -- If sold out: Start resale
-ALTER TABLE Performance
-ADD COLUMN Resale_Active BOOLEAN NOT NULL DEFAULT FALSE;
 
--- Table: Visitor
-CREATE TABLE Visitor (
-    Visitor_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    First_Name VARCHAR(45) NOT NULL,
-    Last_Name VARCHAR(45) NOT NULL,
-    Contact_Details VARCHAR(255),
-    Age INT,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Visitor_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ALTER TABLE Event
+ADD COLUMN Resale_Active BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- Table: Ticket
 CREATE TABLE Ticket (
     Ticket_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
     Visitor_ID INT UNSIGNED NOT NULL,
-    Performance_ID INT UNSIGNED NOT NULL,
+    Event_ID INT UNSIGNED NOT NULL,
     Purchase_Date DATETIME NOT NULL,
     Cost DECIMAL(10,2) NOT NULL,
     Payment_Method_ID INT UNSIGNED NOT NULL,
-    EAN_Code BIGINT NOT NULL,
+    EAN_Code VARCHAR(20) NOT NULL,
     Category_ID INT UNSIGNED NOT NULL,
     Ticket_Status_ID INT UNSIGNED NOT NULL,
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (Ticket_ID),
-    UNIQUE KEY uq_ticket_visitor_performance (Visitor_ID, Performance_ID), -- one for each performance
+    UNIQUE KEY uq_ticket_visitor_performance (Visitor_ID, Event_ID),
+     -- one for each event ;
     KEY idx_ticket_visitor (Visitor_ID),
-    KEY idx_ticket_performance (Performance_ID),
+    KEY idx_ticket_event (Event_ID),
     FOREIGN KEY (Visitor_ID) REFERENCES Visitor(Visitor_ID),
-    FOREIGN KEY (Performance_ID) REFERENCES Performance(Performance_ID), 
+    FOREIGN KEY (Event_ID) REFERENCES Event(Event_ID), 
     FOREIGN KEY (Payment_Method_ID) REFERENCES Payment_Method(Method_ID),
     FOREIGN KEY (Category_ID) REFERENCES Ticket_Category(Category_ID),
     FOREIGN KEY (Ticket_Status_ID) REFERENCES Ticket_Status(Status_ID)
@@ -231,7 +297,6 @@ CREATE TABLE Rating (
     Stage_Presence TINYINT NOT NULL,
     Organization TINYINT NOT NULL,
     Overall_Impression TINYINT NOT NULL,
-    Rating_Date DATETIME NOT NULL,
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (Rating_ID),
     KEY idx_rating_performance (Performance_ID),
@@ -264,15 +329,19 @@ CREATE TABLE Resale_Queue (
 -- Table: Buyers
 CREATE TABLE Resale_Buyer_Interest (
     Interest_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Visitor_ID INT UNSIGNED NOT NULL, -- Ποιος επισκέπτης ενδιαφέρεται
-    Specific_Ticket_ID INT UNSIGNED NULL, -- Συγκεκριμένο εισιτήριο (αν θέλει συγκεκριμένο)
-    Performance_ID INT UNSIGNED NULL,     -- Εναλλακτικά: Παράσταση
-    Category_ID INT UNSIGNED NULL,         -- Και κατηγορία εισιτηρίου (VIP / General κτλ)
+    Visitor_ID INT UNSIGNED NOT NULL,
+    -- Ποιος επισκέπτης ενδιαφέρεται
+    Specific_Ticket_ID INT UNSIGNED NULL,
+    -- Συγκεκριμένο εισιτήριο (αν θέλει συγκεκριμένο)
+    Event_ID INT UNSIGNED NULL,
+    -- Εναλλακτικά: Παράσταση
+    Category_ID INT UNSIGNED NULL,
+    -- Και κατηγορία εισιτηρίου (VIP / General κτλ)
     Interest_Date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (Interest_ID),
     FOREIGN KEY (Visitor_ID) REFERENCES Visitor(Visitor_ID),
     FOREIGN KEY (Specific_Ticket_ID) REFERENCES Ticket(Ticket_ID),
-    FOREIGN KEY (Performance_ID) REFERENCES Performance(Performance_ID),
+    FOREIGN KEY (Event_ID) REFERENCES Event(EVENT_ID),
     FOREIGN KEY (Category_ID) REFERENCES Ticket_Category(Category_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -304,52 +373,6 @@ CREATE TABLE Image (
     KEY idx_image_entity (Entity_ID, Entity_Type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- Lookup Tables
-
--- Table: Continent
-CREATE TABLE Continent (
-    Continent_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Continent_Name VARCHAR(50) NOT NULL,
-    PRIMARY KEY (Continent_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Table: Experience_Level
-CREATE TABLE Experience_Level (
-    Level_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Level_Name VARCHAR(50) NOT NULL,
-    PRIMARY KEY (Level_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Table: Payment_Method
-CREATE TABLE Payment_Method (
-    Method_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Method_Name VARCHAR(50) NOT NULL,
-    PRIMARY KEY (Method_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Table: Ticket_Category
-CREATE TABLE Ticket_Category (
-    Category_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Category_Name VARCHAR(50) NOT NULL,
-    PRIMARY KEY (Category_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Table: Ticket_Status
-CREATE TABLE Ticket_Status (
-    Status_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Status_Name VARCHAR(50) NOT NULL,
-    PRIMARY KEY (Status_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Resale status
-CREATE TABLE Resale_Status (
-    Status_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Status_Name VARCHAR(50) NOT NULL, -- π.χ. 'available', 'sold'
-    PRIMARY KEY (Status_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 -- Triggers
 
 -- Festivals & Performances cannot be canceled
@@ -379,6 +402,7 @@ DELIMITER ;
 -- Trigger for consecutive performances (Start_Time + Duration + Break_Duration)
 DELIMITER //
 
+DROP TRIGGER IF EXISTS trg_check_performance_sequence//
 CREATE TRIGGER trg_check_performance_sequence
 BEFORE INSERT ON Performance
 FOR EACH ROW
@@ -387,18 +411,18 @@ BEGIN
     DECLARE v_Last_Performance_ID INT;
     DECLARE v_Last_Break_Duration INT;
 
-    -- Βρες την τελευταία εμφάνιση σε αυτό το Event
-    SELECT Performance_ID, DATE_ADD(Start_Time, INTERVAL Duration + IFNULL(Break_Duration, 0) MINUTE)
+    -- Changed to include Break_Duration like in the UPDATE trigger
+    SELECT Performance_ID, DATE_ADD(Start_Time, INTERVAL Duration MINUTE)
     INTO v_Last_Performance_ID, v_Last_End
     FROM Performance
     WHERE Event_ID = NEW.Event_ID
     ORDER BY Start_Time DESC
     LIMIT 1;
-
+    
     -- Αν υπάρχει προηγούμενο performance
     IF v_Last_End IS NOT NULL THEN
         -- Εξασφάλισε ότι ξεκινάει μετά το τέλος
-        IF NEW.Start_Time <= v_Last_End THEN
+        IF NEW.Start_Time < v_Last_End THEN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'New performance must start after the previous one ends (including break).';
         END IF;
@@ -434,7 +458,7 @@ BEGIN
     DECLARE v_Last_Break_Duration INT;
 
     -- Βρες την τελευταία εμφάνιση σε αυτό το Event, εκτός από την ίδια την εμφάνιση που κάνουμε update
-    SELECT Performance_ID, DATE_ADD(Start_Time, INTERVAL Duration + IFNULL(Break_Duration, 0) MINUTE)
+    SELECT Performance_ID, DATE_ADD(Start_Time, INTERVAL Duration MINUTE)
     INTO v_Last_Performance_ID, v_Last_End
     FROM Performance
     WHERE Event_ID = NEW.Event_ID
@@ -517,27 +541,27 @@ BEGIN
     DECLARE v_Max_Capacity INT;
     DECLARE v_Current_Tickets INT;
 
-    -- Βρες Stage_ID της Performance
+    -- Βρες Stage_ID της event
     SELECT Stage_ID INTO v_Stage_ID
-    FROM Performance
-    WHERE Performance_ID = NEW.Performance_ID;
+    FROM Event
+    WHERE Event_ID = NEW.Event_ID;
 
     -- Βρες Maximum Capacity της Stage
     SELECT Maximum_Capacity INTO v_Max_Capacity
     FROM Stage
     WHERE Stage_ID = v_Stage_ID;
 
-    -- Πόσα Tickets έχουν πωληθεί για την Performance
+    -- Πόσα Tickets έχουν πωληθεί για την Event
     SELECT COUNT(*)
     INTO v_Current_Tickets
     FROM Ticket
-    WHERE Performance_ID = NEW.Performance_ID;
+    WHERE Event_ID = NEW.Event_ID;
 
     -- Αν γεμίσαμε -> ενεργοποίησε Resale Mode
     IF v_Current_Tickets >= v_Max_Capacity THEN
-        UPDATE Performance
+        UPDATE Event
         SET Resale_Active = TRUE
-        WHERE Performance_ID = NEW.Performance_ID;
+        WHERE Event_ID = NEW.Event_ID;
     END IF;
 END //
 
@@ -636,49 +660,48 @@ END //
 DELIMITER ;
 
 
-
--- Max 3 years consecutively for an artist
-
+-- Band/Artist cannot perform 3 years in a row
 
 DELIMITER //
 
-CREATE TRIGGER trg_check_artist_band_years
+CREATE TRIGGER trg_check_consecutive_years
 BEFORE INSERT ON Performance
 FOR EACH ROW
 BEGIN
-    DECLARE v_count INT;
-
-    -- Αν υπάρχει Artist
+    DECLARE v_consecutive_years INT;
+    DECLARE v_current_year INT;
+    
+    -- Get year of current performance
+    SET v_current_year = YEAR(NEW.Start_Time);
+    
+    -- Check for artists
     IF NEW.Artist_ID IS NOT NULL THEN
-        SELECT COUNT(DISTINCT f.Year)
-        INTO v_count
+        -- Count distinct years in the last 3 years
+        SELECT COUNT(DISTINCT YEAR(p.Start_Time)) INTO v_consecutive_years
         FROM Performance p
         JOIN Event e ON p.Event_ID = e.Event_ID
         JOIN Festival f ON e.Festival_ID = f.Festival_ID
         WHERE p.Artist_ID = NEW.Artist_ID
-          AND (f.Year BETWEEN (SELECT Year FROM Festival WHERE Festival_ID = (SELECT Festival_ID FROM Event WHERE Event_ID = NEW.Event_ID)) - 2
-                       AND (SELECT Year FROM Festival WHERE Festival_ID = (SELECT Festival_ID FROM Event WHERE Event_ID = NEW.Event_ID)));
+        AND YEAR(p.Start_Time) BETWEEN (v_current_year - 3) AND (v_current_year - 1);
         
-        IF v_count >= 3 THEN
+        IF v_consecutive_years >= 3 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Artist cannot participate in more than 3 consecutive years.';
+            SET MESSAGE_TEXT = 'Artist cannot perform in more than 3 consecutive years.';
         END IF;
     END IF;
-
-    -- Αν υπάρχει Band
+    
+    -- Similar check for bands
     IF NEW.Band_ID IS NOT NULL THEN
-        SELECT COUNT(DISTINCT f.Year)
-        INTO v_count
+        SELECT COUNT(DISTINCT YEAR(p.Start_Time)) INTO v_consecutive_years
         FROM Performance p
         JOIN Event e ON p.Event_ID = e.Event_ID
         JOIN Festival f ON e.Festival_ID = f.Festival_ID
         WHERE p.Band_ID = NEW.Band_ID
-          AND (f.Year BETWEEN (SELECT Year FROM Festival WHERE Festival_ID = (SELECT Festival_ID FROM Event WHERE Event_ID = NEW.Event_ID)) - 2
-                       AND (SELECT Year FROM Festival WHERE Festival_ID = (SELECT Festival_ID FROM Event WHERE Event_ID = NEW.Event_ID)));
+        AND YEAR(p.Start_Time) BETWEEN (v_current_year - 3) AND (v_current_year - 1);
         
-        IF v_count >= 3 THEN
+        IF v_consecutive_years >= 3 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Band cannot participate in more than 3 consecutive years.';
+            SET MESSAGE_TEXT = 'Band cannot perform in more than 3 consecutive years.';
         END IF;
     END IF;
 END //
@@ -689,50 +712,51 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE TRIGGER trg_check_artist_band_years_update
+CREATE TRIGGER trg_check_consecutive_years_update
 BEFORE UPDATE ON Performance
 FOR EACH ROW
 BEGIN
-    DECLARE v_count INT;
-
-    -- Αν υπάρχει Artist
+    DECLARE v_consecutive_years INT;
+    DECLARE v_current_year INT;
+    
+    -- Get year of current performance
+    SET v_current_year = YEAR(NEW.Start_Time);
+    
+    -- Check for artists
     IF NEW.Artist_ID IS NOT NULL THEN
-        SELECT COUNT(DISTINCT f.Year)
-        INTO v_count
+        -- Count distinct years in the last 3 years
+        SELECT COUNT(DISTINCT YEAR(p.Start_Time)) INTO v_consecutive_years
         FROM Performance p
         JOIN Event e ON p.Event_ID = e.Event_ID
         JOIN Festival f ON e.Festival_ID = f.Festival_ID
         WHERE p.Artist_ID = NEW.Artist_ID
-          AND p.Performance_ID != NEW.Performance_ID
-          AND (f.Year BETWEEN (SELECT Year FROM Festival WHERE Festival_ID = (SELECT Festival_ID FROM Event WHERE Event_ID = NEW.Event_ID)) - 2
-                       AND (SELECT Year FROM Festival WHERE Festival_ID = (SELECT Festival_ID FROM Event WHERE Event_ID = NEW.Event_ID)));
+        AND YEAR(p.Start_Time) BETWEEN (v_current_year - 3) AND (v_current_year - 1);
         
-        IF v_count >= 3 THEN
+        IF v_consecutive_years >= 3 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Artist cannot participate in more than 3 consecutive years (update).';
+            SET MESSAGE_TEXT = 'Artist cannot perform in more than 3 consecutive years.';
         END IF;
     END IF;
-
-    -- Αν υπάρχει Band
+    
+    -- Similar check for bands
     IF NEW.Band_ID IS NOT NULL THEN
-        SELECT COUNT(DISTINCT f.Year)
-        INTO v_count
+        SELECT COUNT(DISTINCT YEAR(p.Start_Time)) INTO v_consecutive_years
         FROM Performance p
         JOIN Event e ON p.Event_ID = e.Event_ID
         JOIN Festival f ON e.Festival_ID = f.Festival_ID
         WHERE p.Band_ID = NEW.Band_ID
-          AND p.Performance_ID != NEW.Performance_ID
-          AND (f.Year BETWEEN (SELECT Year FROM Festival WHERE Festival_ID = (SELECT Festival_ID FROM Event WHERE Event_ID = NEW.Event_ID)) - 2
-                       AND (SELECT Year FROM Festival WHERE Festival_ID = (SELECT Festival_ID FROM Event WHERE Event_ID = NEW.Event_ID)));
+        AND YEAR(p.Start_Time) BETWEEN (v_current_year - 3) AND (v_current_year - 1);
         
-        IF v_count >= 3 THEN
+        IF v_consecutive_years >= 3 THEN
             SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Band cannot participate in more than 3 consecutive years (update).';
+            SET MESSAGE_TEXT = 'Band cannot perform in more than 3 consecutive years.';
         END IF;
     END IF;
 END //
 
 DELIMITER ;
+
+
 
 
 -- Tickets <= capacity
@@ -748,20 +772,20 @@ BEGIN
     DECLARE v_max_capacity INT;
     DECLARE v_current_tickets INT;
 
-    -- Βρες τη σκηνή του Performance
+    -- Βρες τη σκηνή του Event
     SELECT Stage_ID INTO v_stage_id
-    FROM Performance
-    WHERE Performance_ID = NEW.Performance_ID;
+    FROM Event
+    WHERE Event_ID = NEW.Event_ID;
 
     -- Βρες τη μέγιστη χωρητικότητα της σκηνής
     SELECT Maximum_Capacity INTO v_max_capacity
     FROM Stage
     WHERE Stage_ID = v_stage_id;
 
-    -- Μέτρα πόσα Tickets υπάρχουν ήδη για αυτό το Performance
+    -- Μέτρα πόσα Tickets υπάρχουν ήδη για αυτό το event
     SELECT COUNT(*) INTO v_current_tickets
     FROM Ticket
-    WHERE Performance_ID = NEW.Performance_ID;
+    WHERE Event_ID = NEW.Event_ID;
 
     -- Αν είναι πλήρης, σκάσε ERROR
     IF (v_current_tickets + 1) > v_max_capacity THEN
@@ -787,23 +811,23 @@ BEGIN
     DECLARE v_max_capacity INT;
     DECLARE v_current_tickets INT;
 
-    -- Αν αλλάζει Performance_ID
-    IF OLD.Performance_ID != NEW.Performance_ID THEN
+    -- Αν αλλάζει Event_id
+    IF OLD.Event_ID != NEW.Event_ID THEN
 
         -- Βρες τη νέα σκηνή του νέου Performance
         SELECT Stage_ID INTO v_stage_id
-        FROM Performance
-        WHERE Performance_ID = NEW.Performance_ID;
+        FROM Event
+        WHERE Event_ID = NEW.Event_ID;
 
         -- Βρες τη μέγιστη χωρητικότητα της νέας σκηνής
         SELECT Maximum_Capacity INTO v_max_capacity
         FROM Stage
         WHERE Stage_ID = v_stage_id;
 
-        -- Μέτρα πόσα Tickets υπάρχουν ήδη για το νέο Performance
+        -- Μέτρα πόσα Tickets υπάρχουν ήδη για το νέο Event
         SELECT COUNT(*) INTO v_current_tickets
         FROM Ticket
-        WHERE Performance_ID = NEW.Performance_ID;
+        WHERE Event_ID = NEW.Event_ID;
 
         -- Αν ξεπερνάμε τη χωρητικότητα, σκάμε ERROR
         IF (v_current_tickets + 1) > v_max_capacity THEN
@@ -818,26 +842,7 @@ END //
 DELIMITER ;
 
 
--- Trigger for (5% attendance) = security personnel 
 
-
-DELIMITER //
-
-CREATE TRIGGER trg_check_security_personnel
-AFTER INSERT ON PerformancePersonnel
-FOR EACH ROW
-BEGIN
-    CALL validate_security_for_performance(NEW.Performance_ID);
-END //
-
-CREATE TRIGGER trg_check_security_personnel_update
-AFTER UPDATE ON PerformancePersonnel
-FOR EACH ROW
-BEGIN
-    CALL validate_security_for_performance(NEW.Performance_ID);
-END //
-
-DELIMITER ;
 
 
 -- Trigger for VIP tickets <= 10%
@@ -855,10 +860,10 @@ BEGIN
     DECLARE v_max_vip_tickets INT;
     DECLARE v_current_vip_tickets INT;
 
-    -- Πάρε Stage_ID του Performance
+    -- Πάρε Stage_ID του event
     SELECT Stage_ID INTO v_stage_id
-    FROM Performance
-    WHERE Performance_ID = NEW.Performance_ID;
+    FROM Event
+    WHERE Event_ID = NEW.Event_ID;
 
     -- Πάρε Maximum_Capacity της Stage
     SELECT Maximum_Capacity INTO v_max_capacity
@@ -872,7 +877,7 @@ BEGIN
     SELECT COUNT(*)
     INTO v_current_vip_tickets
     FROM Ticket
-    WHERE Performance_ID = NEW.Performance_ID
+    WHERE Event_ID = NEW.Event_ID
       AND Category_ID = (SELECT Category_ID FROM Ticket_Category WHERE Category_Name = 'VIP');
 
     -- Αν πάμε να ξεπεράσουμε το 10%, πετάμε ERROR
@@ -903,10 +908,10 @@ BEGIN
     -- Μόνο αν το νέο Category είναι VIP και παλιά δεν ήταν VIP
     IF NEW.Category_ID != OLD.Category_ID THEN
     
-        -- Πάρε Stage_ID του Performance
+        -- Πάρε Stage_ID του Event
         SELECT Stage_ID INTO v_stage_id
-        FROM Performance
-        WHERE Performance_ID = NEW.Performance_ID;
+        FROM Event
+        WHERE Event_ID = NEW.Event_ID;
 
         -- Πάρε Maximum_Capacity της Stage
         SELECT Maximum_Capacity INTO v_max_capacity
@@ -916,11 +921,11 @@ BEGIN
         -- Υπολόγισε 10% της χωρητικότητας
         SET v_max_vip_tickets = CEIL(v_max_capacity * 0.10);
 
-        -- Μέτρα πόσα VIP εισιτήρια υπάρχουν ήδη για αυτό το Performance
+        -- Μέτρα πόσα VIP εισιτήρια υπάρχουν ήδη για αυτό το Event
         SELECT COUNT(*)
         INTO v_current_vip_tickets
         FROM Ticket
-        WHERE Performance_ID = NEW.Performance_ID
+        WHERE Event_ID = NEW.Event_ID
           AND Category_ID = (SELECT Category_ID FROM Ticket_Category WHERE Category_Name = 'VIP');
 
         -- Αν το νέο Category είναι VIP και ξεπερνάμε το 10%, πετάμε ERROR
@@ -946,12 +951,12 @@ CREATE TRIGGER trg_check_resale_buyer_interest_insert
 BEFORE INSERT ON Resale_Buyer_Interest
 FOR EACH ROW
 BEGIN
-    -- Αν γέμισαν και τα δύο (Specific Ticket + Performance/Category)
-    IF (NEW.Specific_Ticket_ID IS NOT NULL AND (NEW.Performance_ID IS NOT NULL OR NEW.Category_ID IS NOT NULL)) 
+    -- Αν γέμισαν και τα δύο (Specific Ticket + Event/Category)
+    IF (NEW.Specific_Ticket_ID IS NOT NULL AND (NEW.Event_ID IS NOT NULL OR NEW.Category_ID IS NOT NULL)) 
        OR
-       (NEW.Specific_Ticket_ID IS NULL AND (NEW.Performance_ID IS NULL OR NEW.Category_ID IS NULL)) THEN
+       (NEW.Specific_Ticket_ID IS NULL AND (NEW.Event_ID IS NULL OR NEW.Category_ID IS NULL)) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'You must either specify Specific_Ticket_ID OR (Performance_ID AND Category_ID), but not both or none.';
+        SET MESSAGE_TEXT = 'You must either specify Specific_Ticket_ID OR (Event_ID AND Category_ID), but not both or none.';
     END IF;
 END //
 
@@ -967,11 +972,11 @@ CREATE TRIGGER trg_check_resale_buyer_interest_update
 BEFORE UPDATE ON Resale_Buyer_Interest
 FOR EACH ROW
 BEGIN
-    IF (NEW.Specific_Ticket_ID IS NOT NULL AND (NEW.Performance_ID IS NOT NULL OR NEW.Category_ID IS NOT NULL)) 
+    IF (NEW.Specific_Ticket_ID IS NOT NULL AND (NEW.Event_ID IS NOT NULL OR NEW.Category_ID IS NOT NULL)) 
        OR
-       (NEW.Specific_Ticket_ID IS NULL AND (NEW.Performance_ID IS NULL OR NEW.Category_ID IS NULL)) THEN
+       (NEW.Specific_Ticket_ID IS NULL AND (NEW.Event_ID IS NULL OR NEW.Category_ID IS NULL)) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'You must either specify Specific_Ticket_ID OR (Performance_ID AND Category_ID), but not both or none.';
+        SET MESSAGE_TEXT = 'You must either specify Specific_Ticket_ID OR (Event_ID AND Category_ID), but not both or none.';
     END IF;
 END //
 
@@ -1040,42 +1045,6 @@ END //
 DELIMITER ;
 
 
--- Check rating value
-
-
-DELIMITER //
-
-CREATE TRIGGER trg_check_rating_permission_value
-BEFORE INSERT ON Rating
-FOR EACH ROW
-BEGIN
-    DECLARE v_Ticket_Status_ID INT;
-    
-    -- Έλεγχος αν υπάρχει ΕΝΕΡΓΟΠΟΙΗΜΕΝΟ εισιτήριο για το Visitor και το Event του Performance
-    SELECT Ticket_Status_ID
-    INTO v_Ticket_Status_ID
-    FROM Ticket
-    WHERE Visitor_ID = NEW.Visitor_ID
-      AND Event_ID = (SELECT Event_ID FROM Performance WHERE Performance_ID = NEW.Performance_ID)
-    LIMIT 1;
-
-    -- Αν δεν βρέθηκε ή δεν είναι 'used'
-    IF v_Ticket_Status_ID IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Visitor does not have a ticket for this performance.';
-    END IF;
-    
-    IF v_Ticket_Status_ID != (SELECT Status_ID FROM Ticket_Status WHERE Status_Name = 'used') THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Ticket is not activated (used). Cannot submit rating.';
-    END IF;
-END //
-
-DELIMITER ;
-
-
-
-
 
 -- Stored Procedures
 
@@ -1111,7 +1080,7 @@ END //
 DELIMITER ;
 
 
--- Insert ticker (every day different price)
+-- Insert ticket (every day different price)
 
 
 DELIMITER //
@@ -1120,7 +1089,7 @@ CREATE PROCEDURE buy_ticket(
     IN p_Visitor_ID INT,
     IN p_Performance_ID INT,
     IN p_Payment_Method_ID INT,
-    IN p_EAN_Code BIGINT,
+    IN p_EAN_Code VARCHAR(20),
     IN p_Category_ID INT
 )
 BEGIN
@@ -1128,6 +1097,12 @@ BEGIN
     DECLARE v_Festival_Start DATE;
     DECLARE v_Cost DECIMAL(10,2);
     DECLARE v_Days_Difference INT;
+    DECLARE v_Event_ID INT;
+
+    -- Get the Event_ID associated with this Performance
+    SELECT Event_ID INTO v_Event_ID
+    FROM Performance
+    WHERE Performance_ID = p_Performance_ID;
 
     -- Πάρε την Start_Time της Performance
     SELECT Start_Time INTO v_Start_Date
@@ -1146,17 +1121,20 @@ BEGIN
 
     -- Ορισμός τιμής βάσει ημέρας
     IF v_Days_Difference = 0 THEN
-        SET v_Cost = 30.00; -- Πρώτη μέρα
+        SET v_Cost = 30.00;
+        -- Πρώτη μέρα
     ELSEIF v_Days_Difference = 1 THEN
-        SET v_Cost = 40.00; -- Δεύτερη μέρα
+        SET v_Cost = 40.00;
+        -- Δεύτερη μέρα
     ELSE
-        SET v_Cost = 50.00; -- Από τρίτη μέρα και μετά
+        SET v_Cost = 50.00;
+        -- Από τρίτη μέρα και μετά
     END IF;
 
     -- Εισαγωγή εισιτηρίου
     INSERT INTO Ticket (
         Visitor_ID,
-        Performance_ID,
+        Event_ID,
         Purchase_Date,
         Cost,
         Payment_Method_ID,
@@ -1166,7 +1144,7 @@ BEGIN
     )
     VALUES (
         p_Visitor_ID,
-        p_Performance_ID,
+        v_Event_ID,
         NOW(),
         v_Cost,
         p_Payment_Method_ID,
@@ -1182,97 +1160,6 @@ DELIMITER ;
 -- Stored procedure for securite/attendance in a performance
 
 
-DELIMITER //
-
-CREATE PROCEDURE validate_security_for_performance(IN p_Performance_ID INT)
-BEGIN
-    DECLARE msg TEXT;
-    DECLARE v_Stage_ID INT;
-    DECLARE v_Max_Capacity INT;
-    DECLARE v_Required_Security INT;
-    DECLARE v_Required_Support INT;
-    DECLARE v_Security_Count INT;
-    DECLARE v_Support_Count INT;
-
-    -- Βρες Stage_ID από Performance
-    SELECT Stage_ID INTO v_Stage_ID
-    FROM Performance
-    WHERE Performance_ID = p_Performance_ID;
-
-    -- Βρες τη μέγιστη χωρητικότητα της σκηνής
-    SELECT Maximum_Capacity INTO v_Max_Capacity
-    FROM Stage
-    WHERE Stage_ID = v_Stage_ID;
-
-    -- Υπολόγισε απαιτούμενους security και support
-    SET v_Required_Security = CEIL(v_Max_Capacity * 0.05); -- 5%
-    SET v_Required_Support = CEIL(v_Max_Capacity * 0.02);  -- 2%
-
-    -- Πόσοι security υπάρχουν
-    SELECT COUNT(*) INTO v_Security_Count
-    FROM PerformancePersonnel
-    JOIN Personnel ON PerformancePersonnel.Personnel_ID = Personnel.Personnel_ID
-    WHERE PerformancePersonnel.Performance_ID = p_Performance_ID
-      AND Personnel.Personnel_Role = 'security';
-
-    -- Πόσοι support υπάρχουν
-    SELECT COUNT(*) INTO v_Support_Count
-    FROM PerformancePersonnel
-    JOIN Personnel ON PerformancePersonnel.Personnel_ID = Personnel.Personnel_ID
-    WHERE PerformancePersonnel.Performance_ID = p_Performance_ID
-      AND Personnel.Personnel_Role = 'support';
-
-    -- Έλεγχος
-    IF v_Security_Count < v_Required_Security THEN
-        SET msg = CONCAT('Not enough security personnel: ', v_Security_Count, '/', v_Required_Security, ' required.');
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = msg;
-    END IF;
-
-    IF v_Support_Count < v_Required_Support THEN
-        SET msg = CONCAT('Not enough support personnel: ', v_Support_Count, '/', v_Required_Support, ' required.');
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = msg; 
-    END IF;
-
-END //
-
-DELIMITER ;
-
-
-DELIMITER ;
-
--- Check the security on a stage
-
-DELIMITER //
-
-CREATE PROCEDURE validate_stage_security(IN p_Stage_ID INT)
-BEGIN
-    DECLARE done INT DEFAULT FALSE;
-    DECLARE perf_id INT;
-    DECLARE cur CURSOR FOR
-        SELECT Performance_ID
-        FROM Performance
-        WHERE Stage_ID = p_Stage_ID;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-    OPEN cur;
-
-    read_loop: LOOP
-        FETCH cur INTO perf_id;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-
-        -- Για κάθε Performance στη Stage κάνε έλεγχο
-        CALL validate_security_for_performance(perf_id);
-    END LOOP;
-
-    CLOSE cur;
-END //
-
-DELIMITER ;
 
 
 -- Procedure: put ticket on sale
@@ -1283,6 +1170,12 @@ DELIMITER //
 CREATE PROCEDURE offer_ticket_for_resale(IN p_Ticket_ID INT)
 BEGIN
     DECLARE v_Status_Name VARCHAR(50);
+    DECLARE v_Available_Status_ID INT;
+    
+    -- Get the "available" status ID
+    SELECT Status_ID INTO v_Available_Status_ID
+    FROM Resale_Status 
+    WHERE Status_Name = 'available';
 
     -- Βρες την κατάσταση του εισιτηρίου
     SELECT Status_Name INTO v_Status_Name
@@ -1296,8 +1189,12 @@ BEGIN
         SET MESSAGE_TEXT = 'Cannot resale a used ticket!';
     ELSE
         -- Αν είναι ενεργό (active), τότε καταχωρείται στη Resale Queue
-        INSERT INTO Resale_Queue (Ticket_ID)
-        VALUES (p_Ticket_ID);
+        INSERT INTO Resale_Queue (Ticket_ID, Sale_Status_ID)
+        VALUES (p_Ticket_ID, v_Available_Status_ID);
+        
+        -- Also insert into seller queue
+        INSERT INTO Resale_Seller_Queue (Ticket_ID, Sale_Status_ID)
+        VALUES (p_Ticket_ID, v_Available_Status_ID);
     END IF;
 END //
 
@@ -1312,26 +1209,26 @@ DELIMITER //
 CREATE PROCEDURE create_resale_interest(
     IN p_Visitor_ID INT,
     IN p_Specific_Ticket_ID INT,
-    IN p_Performance_ID INT,
+    IN p_Event_ID INT,
     IN p_Category_ID INT
 )
 BEGIN
     -- Λογικός έλεγχος: πρέπει να δώσει ΜΟΝΟ ΕΝΑΝ τύπο ενδιαφέροντος
-    IF (p_Specific_Ticket_ID IS NOT NULL AND (p_Performance_ID IS NOT NULL OR p_Category_ID IS NOT NULL))
-        OR (p_Specific_Ticket_ID IS NULL AND (p_Performance_ID IS NULL OR p_Category_ID IS NULL)) THEN
+    IF (p_Specific_Ticket_ID IS NOT NULL AND (p_Event_ID IS NOT NULL OR p_Category_ID IS NOT NULL))
+        OR (p_Specific_Ticket_ID IS NULL AND (p_Event_ID IS NULL OR p_Category_ID IS NULL)) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'You must either specify a Specific Ticket OR (Performance and Category), but not both or none.';
+        SET MESSAGE_TEXT = 'You must either specify a Specific Ticket OR (Event and Category), but not both or none.';
     ELSE
         INSERT INTO Resale_Buyer_Interest (
             Visitor_ID,
             Specific_Ticket_ID,
-            Performance_ID,
+            Event_ID,
             Category_ID
         )
         VALUES (
             p_Visitor_ID,
             p_Specific_Ticket_ID,
-            p_Performance_ID,
+            p_Event_ID,
             p_Category_ID
         );
     END IF;
@@ -1349,7 +1246,7 @@ CREATE PROCEDURE match_resale(IN p_Ticket_ID INT)
 BEGIN
     DECLARE done INT DEFAULT FALSE;
     DECLARE v_Ticket_ID INT;
-    DECLARE v_Performance_ID INT;
+    DECLARE v_Event_ID INT;
     DECLARE v_Category_ID INT;
     DECLARE v_Buyer_Visitor_ID INT;
     DECLARE v_Seller_Queue_ID INT;
@@ -1368,7 +1265,7 @@ BEGIN
 
         -- Βρες Performance και Category
         SELECT Event_ID, Category_ID
-        INTO v_Performance_ID, v_Category_ID
+        INTO v_Event_ID, v_Category_ID
         FROM Ticket
         WHERE Ticket_ID = p_Ticket_ID;
         
@@ -1377,7 +1274,7 @@ BEGIN
         INTO v_Buyer_Visitor_ID
         FROM Resale_Buyer_Interest
         WHERE (Specific_Ticket_ID = p_Ticket_ID 
-            OR (Performance_ID = v_Performance_ID AND Category_ID = v_Category_ID))
+            OR (Event_ID = v_Event_ID AND Category_ID = v_Category_ID))
         ORDER BY Interest_Date ASC
         LIMIT 1;
 
@@ -1401,7 +1298,7 @@ BEGIN
             DELETE FROM Resale_Buyer_Interest
             WHERE Visitor_ID = v_Buyer_Visitor_ID
               AND (Specific_Ticket_ID = p_Ticket_ID 
-                  OR (Performance_ID = v_Performance_ID AND Category_ID = v_Category_ID));
+                  OR (Event_ID = v_Event_ID AND Category_ID = v_Category_ID));
         END IF;
 
     ELSE 
@@ -1416,7 +1313,7 @@ BEGIN
 
             -- Βρες Performance και Category
             SELECT Event_ID, Category_ID
-            INTO v_Performance_ID, v_Category_ID
+            INTO v_Event_ID, v_Category_ID
             FROM Ticket
             WHERE Ticket_ID = v_Ticket_ID;
 
@@ -1425,7 +1322,7 @@ BEGIN
             INTO v_Buyer_Visitor_ID
             FROM Resale_Buyer_Interest
             WHERE (Specific_Ticket_ID = v_Ticket_ID 
-                OR (Performance_ID = v_Performance_ID AND Category_ID = v_Category_ID))
+                OR (Event_ID = v_Event_ID AND Category_ID = v_Category_ID))
             ORDER BY Interest_Date ASC
             LIMIT 1;
 
@@ -1448,7 +1345,7 @@ BEGIN
                 DELETE FROM Resale_Buyer_Interest
                 WHERE Visitor_ID = v_Buyer_Visitor_ID
                   AND (Specific_Ticket_ID = v_Ticket_ID 
-                      OR (Performance_ID = v_Performance_ID AND Category_ID = v_Category_ID));
+                      OR (Event_ID = v_Event_ID AND Category_ID = v_Category_ID));
             END IF;
         END LOOP;
 
