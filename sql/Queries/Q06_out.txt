@@ -1,0 +1,10 @@
+Visitor_ID	Visitor_Name	Performance_ID	Performer	Performance_Type	Start_Time   	Stage_ID	Event_Name	Avg_Artist_Interpretation	Avg_Sound_Lighting	Avg_Stage_Presence	Avg_Organization	Avg_Overall_Impression	Overall_Average	Rating_Count	
+69	Samantha Brown	49	Tiffany Monroe	Special guest	2025-06-11 17:47:00	25	responsibilityEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Samantha Brown	48	Katelyn Montgomery	warm up	2025-06-11 16:00:00	25	responsibilityEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Samantha Brown	39	Jeffrey Pratt	warm up	2025-06-08 20:00:00	12	amountEvent	5.0000	4.0000	5.0000	4.0000	5.0000	4.60	1	
+69	Samantha Brown	38	David Wilson	headline	2025-06-08 18:29:00	12	amountEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Samantha Brown	37	Patrick Frank	warm up	2025-06-08 16:00:00	12	amountEvent	1.0000	3.0000	4.0000	4.0000	1.0000	2.60	1	
+69	Samantha Brown	54	Susan Hughes	Special guest	2025-02-10 20:53:00	17	decideEvent	2.0000	1.0000	3.0000	5.0000	1.0000	2.40	1	
+69	Samantha Brown	53	Katherine Mooney	Special guest	2025-02-10 19:45:00	17	decideEvent	1.0000	5.0000	1.0000	2.0000	3.0000	2.40	1	
+69	Samantha Brown	52	James Wilson	Special guest	2025-02-10 16:37:00	17	decideEvent	3.0000	1.0000	3.0000	3.0000	5.0000	3.00	1	
+69	Samantha Brown	51	Melissa Yates	Special guest	2025-02-10 14:00:00	17	decideEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	

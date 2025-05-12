@@ -15,7 +15,7 @@ JOIN
 JOIN 
     Performance perf ON e.Event_ID = perf.Event_ID
 WHERE 
-    t.Ticket_Status_ID = (SELECT Status_ID FROM Ticket_Status WHERE Status_Name = 'used')
+    t.Ticket_Status_ID = (SELECT Status_ID FROM Ticket_Status WHERE Status_Name = 'activated')
 GROUP BY 
     v.Visitor_ID, v.First_Name, v.Last_Name, YEAR(perf.Start_Time)
 HAVING 
@@ -32,7 +32,7 @@ HAVING
         JOIN 
             Performance p2 ON e2.Event_ID = p2.Event_ID
         WHERE 
-            t2.Ticket_Status_ID = (SELECT Status_ID FROM Ticket_Status WHERE Status_Name = 'used')
+            t2.Ticket_Status_ID = (SELECT Status_ID FROM Ticket_Status WHERE Status_Name = 'activated')
         GROUP BY 
             v2.Visitor_ID, YEAR(p2.Start_Time)
         HAVING 

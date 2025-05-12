@@ -1,0 +1,4 @@
+Genre1	Genre2	Artists_Count	
+Jazz	Electronic	7	
+Rock	Metal	7	
+Electronic	Metal	6	

@@ -1,0 +1,26 @@
+Personnel_ID	Personnel_Name	Personnel_Role   	
+695	Aaron Rivera	assistant	
+527	Abigail Hoover	assistant	
+429	Adam Singleton	assistant	
+118	Alan Berry	assistant	
+686	Alan Lara	assistant	
+346	Alyssa Reed	assistant	
+310	Amy Wade	assistant	
+266	Amy Wiley	assistant	
+438	Andre Miller	assistant	
+403	Andre Thornton	assistant	
+823	Andrew Nielsen	assistant	
+636	Angela Mckee	assistant	
+212	April Hampton	assistant	
+234	April Morgan	assistant	
+872	Ashley Gonzales	assistant	
+88	Ashley Lam DDS	assistant	
+635	Ashley Morris	assistant	
+264	Ashley Richardson	assistant	
+969	Austin Frank	assistant	
+951	Austin Nguyen	assistant	
+181	Austin Simmons	assistant	
+327	Barbara Moore	assistant	
+536	Barry Adams	assistant	
+956	Benjamin Banks	assistant	
+950	Blake Rhodes	assistant	

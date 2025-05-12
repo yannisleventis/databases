@@ -1,0 +1,18 @@
+Artist_ID	Artist_Name   	Stage_Name	Genre_Name	Performed_In_Year	
+10	Allen Nelson	Dr. Armenian	Jazz	Yes	
+23	Allison Davis	Dr. Venda	Jazz	No	
+14	Bruce Mcdonald	Mx. Faroese	Jazz	No	
+26	Cathy Simpson	Dr. Zhuang	Jazz	Yes	
+35	Erin Rich	Ind. Turkish	Jazz	Yes	
+50	Jared Harris	Mx. Greek	Jazz	Yes	
+4	Jennifer Ross	Dr. Chechen	Jazz	Yes	
+47	Jerry Frank	Ind. Hausa	Jazz	No	
+29	Jessica Turner	Mx. Romanian	Jazz	No	
+17	Judith Rogers	Misc. South Ndebele	Jazz	No	
+2	Katelyn Montgomery	Mx. Ewe	Jazz	Yes	
+6	Kelly Martinez	Mx. Sinhala	Jazz	Yes	
+38	Mark Martin	Mx. Dutch	Jazz	Yes	
+44	Patrick Frank	Misc. Irish	Jazz	Yes	
+20	Robert Bates	Dr. Shona	Jazz	No	
+32	Samantha Kramer	Ind. Dutch	Jazz	No	
+41	Sherri Turner	Mx. Igbo	Jazz	No	

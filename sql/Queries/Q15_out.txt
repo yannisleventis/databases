@@ -1,0 +1,6 @@
+VisitorName	ArtistName	TotalScore	
+Courtney Tyler	Erin Rich	54	
+Rodney Guerrero	Allen Nelson	53	
+Jason Barnes	Jennifer Ross	49	
+Kyle Matthews	Sharon Johnson	47	
+Andrew Salazar	Katelyn Montgomery	45	

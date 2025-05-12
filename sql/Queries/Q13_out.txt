@@ -1,0 +1,10 @@
+Artist_ID	Artist_Name	Continents_Played	
+10	Allen Nelson	4	
+21	Karla Henson	4	
+36	Alec Thornton	3	
+34	Cindy Garcia	3	
+30	David Wilson	3	
+27	Dillon Nelson	3	
+35	Erin Rich	3	
+50	Jared Harris	3	
+45	Susan Hughes	3	

@@ -1,0 +1,2 @@
+Artist_ID Artist_Name Stage_Name Avg_Artist_Interpretation Avg_Overall_Impression Performances_Rated Total_Ratings
+11 Brandon Berry Dr. Hebrew 3.00 3.33 1 42

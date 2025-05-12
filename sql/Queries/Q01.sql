@@ -1,3 +1,5 @@
+use musicfestival;
+
 SELECT 
     YEAR(f.Start_Date) AS Festival_Year,
     tc.Category_Name AS Ticket_Category,

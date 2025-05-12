@@ -1,0 +1,157 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "filesort": {
+      "sort_key": "p.Performance_ID, case when p.Artist_ID is not null then concat(a.First_Name,' ',a.Last_Name) when p.Band_ID is not null then b.Band_Name else 'Unknown' end, pt.Performance_Type, p.Start_Time, s.Stage_ID, e.Event_Name",
+      "temporary_table": {
+        "table": {
+          "table_name": "v",
+          "access_type": "const",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "4",
+          "used_key_parts": ["Visitor_ID"],
+          "ref": ["const"],
+          "rows": 1,
+          "filtered": 100
+        },
+        "table": {
+          "table_name": "t",
+          "access_type": "index_merge",
+          "possible_keys": [
+            "uq_ticket_visitor_performance",
+            "idx_ticket_visitor",
+            "idx_ticket_event",
+            "Ticket_Status_ID"
+          ],
+          "key_length": "4,4",
+          "index_merge": {
+            "intersect": {
+              "range": {
+                "key": "idx_ticket_visitor",
+                "used_key_parts": ["Visitor_ID"]
+              },
+              "range": {
+                "key": "Ticket_Status_ID",
+                "used_key_parts": ["Ticket_Status_ID"]
+              }
+            }
+          },
+          "rows": 1,
+          "filtered": 100,
+          "attached_condition": "t.Ticket_Status_ID = (subquery#2) and t.Visitor_ID = 69"
+        },
+        "table": {
+          "table_name": "e",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "4",
+          "used_key_parts": ["Event_ID"],
+          "ref": ["musicfestival.t.Event_ID"],
+          "rows": 1,
+          "filtered": 100
+        },
+        "table": {
+          "table_name": "p",
+          "access_type": "ref",
+          "possible_keys": [
+            "uq_stage_starttime",
+            "idx_performance_event",
+            "Stage_ID",
+            "Performance_Type_ID"
+          ],
+          "key": "uq_stage_starttime",
+          "key_length": "4",
+          "used_key_parts": ["Event_ID"],
+          "ref": ["musicfestival.t.Event_ID"],
+          "rows": 1,
+          "filtered": 100
+        },
+        "table": {
+          "table_name": "s",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "4",
+          "used_key_parts": ["Stage_ID"],
+          "ref": ["musicfestival.p.Stage_ID"],
+          "rows": 1,
+          "filtered": 100,
+          "using_index": true
+        },
+        "table": {
+          "table_name": "a",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "4",
+          "used_key_parts": ["Artist_ID"],
+          "ref": ["musicfestival.p.Artist_ID"],
+          "rows": 1,
+          "filtered": 100,
+          "attached_condition": "trigcond(trigcond(p.Artist_ID is not null))"
+        },
+        "table": {
+          "table_name": "b",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "4",
+          "used_key_parts": ["Band_ID"],
+          "ref": ["musicfestival.p.Band_ID"],
+          "rows": 1,
+          "filtered": 100,
+          "attached_condition": "trigcond(trigcond(p.Band_ID is not null))"
+        },
+        "block-nl-join": {
+          "table": {
+            "table_name": "pt",
+            "access_type": "ALL",
+            "possible_keys": ["PRIMARY"],
+            "rows": 3,
+            "filtered": 100
+          },
+          "buffer_type": "flat",
+          "buffer_size": "12Kb",
+          "join_type": "BNL",
+          "attached_condition": "pt.Performance_Type_ID = p.Performance_Type_ID"
+        },
+        "table": {
+          "table_name": "r",
+          "access_type": "ref",
+          "possible_keys": ["idx_rating_performance", "Visitor_ID"],
+          "key": "idx_rating_performance",
+          "key_length": "4",
+          "used_key_parts": ["Performance_ID"],
+          "ref": ["musicfestival.p.Performance_ID"],
+          "rowid_filter": {
+            "range": {
+              "key": "Visitor_ID",
+              "used_key_parts": ["Visitor_ID"]
+            },
+            "rows": 8,
+            "selectivity_pct": 0.1835
+          },
+          "rows": 20,
+          "filtered": 0.1835,
+          "attached_condition": "trigcond(r.Visitor_ID = 69)"
+        },
+        "subqueries": [
+          {
+            "query_block": {
+              "select_id": 2,
+              "table": {
+                "table_name": "Ticket_Status",
+                "access_type": "ALL",
+                "rows": 2,
+                "filtered": 100,
+                "attached_condition": "ticket_status.Status_Name = 'activated'"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}	

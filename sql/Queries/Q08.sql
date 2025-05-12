@@ -1,4 +1,4 @@
-use musicfestival;
+USE musicfestival;
 
 SELECT 
     p.Personnel_ID,
@@ -12,7 +12,7 @@ LEFT JOIN (
     SELECT DISTINCT pp.Personnel_ID
     FROM PerformancePersonnel pp
     JOIN Performance perf ON pp.Performance_ID = perf.Performance_ID
-    WHERE DATE(perf.Start_Time) = :specific_date
+    WHERE DATE(perf.Start_Time) = '2025-07-21'
 ) work_on_date ON p.Personnel_ID = work_on_date.Personnel_ID
 WHERE 
     pr.Personnel_Role IN ('technical', 'security', 'assistant')

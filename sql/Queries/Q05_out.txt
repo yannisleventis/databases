@@ -1,0 +1,11 @@
+Artist_ID	Artist_Name	Stage_Name	Age   	Festival_Count   	
+4	Jennifer Ross	Dr. Chechen	20	3	
+33	James Wilson	Dr. Nauru	20	3	
+36	Alec Thornton	Misc. Hebrew	29	3	
+37	Brandi Robbins	Dr. Lithuanian	22	2	
+39	Katherine Mooney	Misc. Rundi	29	2	
+46	Michael Chen	Dr. Norwegian	5	1	
+24	Courtney Johnson	Dr. Marshallese	9	1	
+11	Brandon Berry	Dr. Hebrew	10	1	
+15	James Saunders	Mx. Venda	24	1	
+43	Stephen Garcia	Misc. Luba-Katanga	25	1	
