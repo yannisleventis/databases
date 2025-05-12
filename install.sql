@@ -67,6 +67,16 @@ CREATE TABLE Resale_Status (
     PRIMARY KEY (Status_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+-- Πίνακας για τα μουσικά είδη
+CREATE TABLE Genre (
+    Genre_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    Genre_Name VARCHAR(50) NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Genre_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 -- Tables with no foreign keys
 
 -- Table: Stage
@@ -101,6 +111,19 @@ CREATE TABLE Artist (
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (Artist_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- Πίνακας σύνδεσης Artists με Genres (many-to-many)
+CREATE TABLE Artist_Genre (
+    Artist_ID INT UNSIGNED NOT NULL,
+    Genre_ID INT UNSIGNED NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (Artist_ID, Genre_ID),
+    KEY idx_artist_genre_genre (Genre_ID),
+    FOREIGN KEY (Artist_ID) REFERENCES Artist(Artist_ID),
+    FOREIGN KEY (Genre_ID) REFERENCES Genre(Genre_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 -- Table: Band
 CREATE TABLE Band (
