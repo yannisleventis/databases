@@ -6,6 +6,17 @@
 - Resale buyer interest table
 - Resale sellers table
 - Βαθμολογία Linkern = 1 - 5 => Check constraints
+- Sequencing changed so no issues with foreign keys (eg lookup tables are created first)
+- Updated trigger logic trg_check_performance_sequence
+- Updated offer_ticket_for_resale: it now also inserts to Resale_Seller_Queue, and marks ticket as available
+- Updated buy_ticket procedure to use Event_ID instead of Performance_ID
+- Added trigger for artist/band cant perform 3 years in a row
+- Removed STAGE_ID from performance table and all related triggers (redundant because every performance belongs to an event which has a stage_id)
+- Removed trg_check_rating_permission_value because it was identical to trg_check_rating_permission_ticket
+- Changed p_EAN_Code from BIGINT to VARCHAR(20) to match table 
+- In match_resale and create_resale_interest procedures and error message from trg_check_resale_buyer_interest_insert/update, changed v_Performance_ID and Performance_ID to v_Event_ID, Event_ID because table Resale_Buyer_Interest does not have Performance_ID column, it has Event_ID
+****
+- Added Genre(lookup table), Genre_Artist(table) to connect artists with genres.
 
 
 Constraints added:
