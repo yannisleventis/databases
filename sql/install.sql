@@ -1190,6 +1190,148 @@ END //
 
 DELIMITER ;
 
+-- Personnel ratio check
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_personnel_ratio
+BEFORE INSERT ON PerformancePersonnel
+FOR EACH ROW
+BEGIN
+    DECLARE v_event_id INT;
+    DECLARE v_stage_id INT;
+    DECLARE v_visitor_count INT;
+    DECLARE v_security_count INT;
+    DECLARE v_assistant_count INT;
+    DECLARE v_required_security INT;
+    DECLARE v_required_assistants INT;
+    DECLARE v_personnel_role INT;
+    DECLARE msg VARCHAR(255);
+    
+    -- Get the personnel role for the new assignment
+    SELECT Personnel_Role_ID INTO v_personnel_role
+    FROM Personnel
+    WHERE Personnel_ID = NEW.Personnel_ID;
+    
+    -- Get event and stage information for this performance
+    SELECT Event_ID, Stage_ID INTO v_event_id, v_stage_id
+    FROM Performance
+    WHERE Performance_ID = NEW.Performance_ID;
+    
+    -- Count number of visitors for this event
+    SELECT COUNT(*) INTO v_visitor_count
+    FROM Ticket
+    WHERE Event_ID = v_event_id
+    AND Ticket_Status_ID IN (SELECT Status_ID FROM Ticket_Status WHERE Status_Name IN ('active', 'used'));
+    
+    -- Count current security personnel for this performance
+    SELECT COUNT(*) INTO v_security_count
+    FROM PerformancePersonnel pp
+    JOIN Personnel p ON pp.Personnel_ID = p.Personnel_ID
+    WHERE pp.Performance_ID = NEW.Performance_ID
+    AND p.Personnel_Role_ID = 2 -- Security role
+    AND pp.Personnel_ID != NEW.Personnel_ID; -- Don't count the one being inserted
+    
+    -- Count current assistant personnel for this performance
+    SELECT COUNT(*) INTO v_assistant_count
+    FROM PerformancePersonnel pp
+    JOIN Personnel p ON pp.Personnel_ID = p.Personnel_ID
+    WHERE pp.Performance_ID = NEW.Performance_ID
+    AND p.Personnel_Role_ID = 3 -- Assistant role
+    AND pp.Personnel_ID != NEW.Personnel_ID; -- Don't count the one being inserted
+    
+    -- If the personnel being added is security, increment the count
+    IF v_personnel_role = 2 THEN
+        SET v_security_count = v_security_count + 1;
+    END IF;
+    
+    -- If the personnel being added is assistant, increment the count
+    IF v_personnel_role = 3 THEN
+        SET v_assistant_count = v_assistant_count + 1;
+    END IF;
+    
+    -- Calculate required personnel
+    SET v_required_security = CEILING(v_visitor_count * 0.05); -- At least 5%
+    SET v_required_assistants = CEILING(v_visitor_count * 0.02); -- At least 2%
+    
+    -- Check if requirements are met
+    IF v_security_count < v_required_security THEN
+        SET msg = CONCAT('Not enough security personnel. Required: ', v_required_security, ', Current: ', v_security_count);
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+    
+    IF v_assistant_count < v_required_assistants THEN
+        SET msg = CONCAT('Not enough assistant personnel. Required: ', v_required_assistants, ', Current: ', v_assistant_count);
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+END //
+
+DELIMITER ;
+
+-- Check personnel ratio on ticket sale
+
+DELIMITER //
+
+CREATE TRIGGER trg_check_personnel_ratio_on_ticket
+BEFORE INSERT ON Ticket
+FOR EACH ROW
+BEGIN
+    DECLARE v_stage_id INT;
+    DECLARE v_visitor_count INT;
+    DECLARE v_security_count INT;
+    DECLARE v_assistant_count INT;
+    DECLARE v_required_security INT;
+    DECLARE v_required_assistants INT;
+    DECLARE msg VARCHAR(255);
+    
+    -- Get the stage ID for this event
+    SELECT Stage_ID INTO v_stage_id
+    FROM Event
+    WHERE Event_ID = NEW.Event_ID;
+    
+    -- Count number of visitors for this event (including the new ticket)
+    SELECT COUNT(*) + 1 INTO v_visitor_count  -- +1 for the new ticket
+    FROM Ticket
+    WHERE Event_ID = NEW.Event_ID
+    AND Ticket_Status_ID IN (SELECT Status_ID FROM Ticket_Status WHERE Status_Name IN ('active', 'used'));
+    
+    -- Get all performances for this event
+    -- For each performance of this event, count security and assistant personnel
+    SELECT 
+        SUM(IF(p.Personnel_Role_ID = 2, 1, 0)) INTO v_security_count
+    FROM PerformancePersonnel pp
+    JOIN Personnel p ON pp.Personnel_ID = p.Personnel_ID
+    JOIN Performance perf ON pp.Performance_ID = perf.Performance_ID
+    WHERE perf.Event_ID = NEW.Event_ID
+    AND p.Personnel_Role_ID = 2; -- Security role
+    
+    SELECT 
+        SUM(IF(p.Personnel_Role_ID = 3, 1, 0)) INTO v_assistant_count
+    FROM PerformancePersonnel pp
+    JOIN Personnel p ON pp.Personnel_ID = p.Personnel_ID
+    JOIN Performance perf ON pp.Performance_ID = perf.Performance_ID
+    WHERE perf.Event_ID = NEW.Event_ID
+    AND p.Personnel_Role_ID = 3; -- Assistant role
+    
+    -- Calculate required personnel
+    SET v_required_security = CEILING(v_visitor_count * 0.05);
+    SET v_required_assistants = CEILING(v_visitor_count * 0.02);
+    
+    -- Check if requirements are met
+    IF v_security_count < v_required_security THEN
+        SET msg = CONCAT('Cannot sell ticket: insufficient security personnel. Need at least ', 
+                        v_required_security, ' (currently have ', v_security_count, ')');
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+    
+    IF v_assistant_count < v_required_assistants THEN
+        SET msg = CONCAT('Cannot sell ticket: insufficient assistant personnel. Need at least ', 
+                        v_required_assistants, ' (currently have ', v_assistant_count, ')');
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+END //
+
+DELIMITER ;
 
 -- Interest for a ticket
 
