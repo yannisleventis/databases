@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title><%= query.title %></title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 4px 8px; }
+  </style>
+</head>
+<body>
+  <h1><%= query.title %></h1>
+
+  <% if (rows.length === 0) { %>
+    <p>No results.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <% Object.keys(rows[0]).forEach(col => { %>
+            <th><%= col %></th>
+          <% }) %>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.forEach(r => { %>
+          <tr>
+            <% Object.values(r).forEach(v => { %>
+              <td><%= v %></td>
+            <% }) %>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+  <p><a href="/queries">&larr; Back to queries</a></p>
+</body>
+</html>

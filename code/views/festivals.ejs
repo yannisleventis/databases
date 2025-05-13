@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Festivals</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <h1>Festivals</h1>
+  <ul>
+    <% festivals.forEach(f => { %>
+      <li><%= f.Name %> — <%= f.Start_Date.toISOString().slice(0,10) %></li>
+    <% }) %>
+  </ul>
+</body>
+</html>

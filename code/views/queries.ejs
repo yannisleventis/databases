@@ -1,0 +1,30 @@
+<!-- views/queries.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Choose a Query</title>
+  <link rel="stylesheet" href="/css/main.css"><!-- optional -->
+</head>
+<body>
+  <h1>Select a query to run</h1>
+
+  <form action="/queries" method="POST">
+    <select name="queryId" required>
+      <% queries.forEach(q => { %>
+        <option value="<%= q.id %>"><%= q.title %></option>
+      <% }) %>
+    </select>
+
+    <button type="submit">Run</button>
+  </form>
+
+  <p style="margin-top:2rem">
+    or click a link:
+    <ul>
+      <% queries.forEach(q => { %>
+        <li><a href="/queries/<%= q.id %>"><%= q.title %></a></li>
+      <% }) %>
+    </ul>
+  </p>
+</body>
+</html>

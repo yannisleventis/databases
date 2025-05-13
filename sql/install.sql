@@ -295,7 +295,7 @@ CREATE TABLE Ticket (
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (Ticket_ID),
     UNIQUE KEY uq_ticket_visitor_performance (Visitor_ID, Event_ID),
-     -- one for each event ;
+    -- one for each event ;
     KEY idx_ticket_visitor (Visitor_ID),
     KEY idx_ticket_event (Event_ID),
     FOREIGN KEY (Visitor_ID) REFERENCES Visitor(Visitor_ID),
