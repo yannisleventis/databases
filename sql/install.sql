@@ -539,46 +539,6 @@ END //
 DELIMITER ;
 
 
--- Resale queue starts on sold out trigger
-
-
-DELIMITER //
-
-CREATE TRIGGER trg_activate_resale_mode
-AFTER INSERT ON Ticket
-FOR EACH ROW
-BEGIN
-    DECLARE v_Stage_ID INT;
-    DECLARE v_Max_Capacity INT;
-    DECLARE v_Current_Tickets INT;
-
-    -- Βρες Stage_ID της event
-    SELECT Stage_ID INTO v_Stage_ID
-    FROM Event
-    WHERE Event_ID = NEW.Event_ID;
-
-    -- Βρες Maximum Capacity της Stage
-    SELECT Maximum_Capacity INTO v_Max_Capacity
-    FROM Stage
-    WHERE Stage_ID = v_Stage_ID;
-
-    -- Πόσα Tickets έχουν πωληθεί για την Event
-    SELECT COUNT(*)
-    INTO v_Current_Tickets
-    FROM Ticket
-    WHERE Event_ID = NEW.Event_ID;
-
-    -- Αν γεμίσαμε -> ενεργοποίησε Resale Mode
-    IF v_Current_Tickets >= v_Max_Capacity THEN
-        UPDATE Event
-        SET Resale_Active = TRUE
-        WHERE Event_ID = NEW.Event_ID;
-    END IF;
-END //
-
-DELIMITER ;
-
-
 
 -- Artist one performance per time period / no overlap
 
@@ -994,6 +954,46 @@ END //
 DELIMITER ;
 
 
+-- Resale queue starts on sold out trigger
+
+
+DELIMITER //
+
+CREATE TRIGGER trg_activate_resale_mode
+AFTER INSERT ON Ticket
+FOR EACH ROW
+BEGIN
+    DECLARE v_Stage_ID INT;
+    DECLARE v_Max_Capacity INT;
+    DECLARE v_Current_Tickets INT;
+
+    -- Βρες Stage_ID της event
+    SELECT Stage_ID INTO v_Stage_ID
+    FROM Event
+    WHERE Event_ID = NEW.Event_ID;
+
+    -- Βρες Maximum Capacity της Stage
+    SELECT Maximum_Capacity INTO v_Max_Capacity
+    FROM Stage
+    WHERE Stage_ID = v_Stage_ID;
+
+    -- Πόσα Tickets έχουν πωληθεί για την Event
+    SELECT COUNT(*)
+    INTO v_Current_Tickets
+    FROM Ticket
+    WHERE Event_ID = NEW.Event_ID;
+
+    -- Αν γεμίσαμε -> ενεργοποίησε Resale Mode
+    IF v_Current_Tickets >= v_Max_Capacity THEN
+        UPDATE Event
+        SET Resale_Active = TRUE
+        WHERE Event_ID = NEW.Event_ID;
+    END IF;
+END //
+
+DELIMITER ;
+
+
 -- Trigger: Call auto match
 
 -- Trigger όταν ένας νέος πωλητής μπαίνει στην ουρά
@@ -1007,9 +1007,6 @@ BEGIN
 END //
 
 DELIMITER ;
-
-
-
 
 
 -- Check that rating matches a used ticket
