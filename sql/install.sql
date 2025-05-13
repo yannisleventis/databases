@@ -202,13 +202,7 @@ CREATE TABLE Festival (
     KEY idx_festival_date (Start_Date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
--- Each year can have only 1 pulse university festival.
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 -- Alter Table: Festival (add Start_Year), to be used for unique constraint
 ALTER TABLE Festival
 ADD COLUMN Start_Year INT GENERATED ALWAYS AS (YEAR(Start_Date)) STORED,
