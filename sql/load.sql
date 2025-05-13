@@ -5282,6 +5282,15 @@ INSERT INTO Location
 VALUES
 ('5144 Brittany Flat,North Jillview, ME 02548', -13.296084, 72.2155435, 'Johnsonberg', 'Korea', 5)
 ;
+INSERT INTO Location
+ (Location_Address, Longitude, Latitude, City, Country, Continent_ID)
+VALUES
+('21 Sunset Terrace, West Winifredmouth, TX 73451', 45.123456, -93.123456, 'Winifredmouth', 'USA', 1),
+('3 Elm Street, East Haroldberg, AB T1A 2B3', -114.0719, 51.0447, 'Haroldberg', 'Canada', 1),
+('19 Oceanview Road, South Angelahaven, NSW 2100', 151.2093, -33.8688, 'Angelahaven', 'Australia', 4),
+('202 Green Hill, East New Ryan, 10001', 139.6917, 35.6895, 'New Ryan', 'Japan', 3),
+('8 Central Plaza, Old Mckenzieborough, 90210', -0.1278, 51.5074, 'Mckenzieborough', 'UK', 2)
+;
 INSERT INTO Festival
  (Name, Start_Date, End_Date, Location_ID)
 VALUES
