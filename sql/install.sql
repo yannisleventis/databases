@@ -610,8 +610,8 @@ BEGIN
         INTO v_count
         FROM Performance
         WHERE Artist_ID = NEW.Artist_ID
-          AND ((NEW.Start_Time BETWEEN Start_Time AND DATE_ADD(Start_Time, INTERVAL Duration MINUTE))
-            OR (Start_Time BETWEEN NEW.Start_Time AND DATE_ADD(NEW.Start_Time, INTERVAL NEW.Duration MINUTE)));
+          AND NOT (NEW.Start_Time >= DATE_ADD(Start_Time, INTERVAL Duration MINUTE) OR 
+                   Start_Time >= DATE_ADD(NEW.Start_Time, INTERVAL NEW.Duration MINUTE));
         
         IF v_count > 0 THEN
             SIGNAL SQLSTATE '45000'
@@ -625,8 +625,8 @@ BEGIN
         INTO v_count
         FROM Performance
         WHERE Band_ID = NEW.Band_ID
-          AND ((NEW.Start_Time BETWEEN Start_Time AND DATE_ADD(Start_Time, INTERVAL Duration MINUTE))
-            OR (Start_Time BETWEEN NEW.Start_Time AND DATE_ADD(NEW.Start_Time, INTERVAL NEW.Duration MINUTE)));
+          AND NOT (NEW.Start_Time >= DATE_ADD(Start_Time, INTERVAL Duration MINUTE) OR 
+                   Start_Time >= DATE_ADD(NEW.Start_Time, INTERVAL NEW.Duration MINUTE));
         
         IF v_count > 0 THEN
             SIGNAL SQLSTATE '45000'
@@ -654,8 +654,8 @@ BEGIN
         FROM Performance
         WHERE Artist_ID = NEW.Artist_ID
           AND Performance_ID != NEW.Performance_ID
-          AND ((NEW.Start_Time BETWEEN Start_Time AND DATE_ADD(Start_Time, INTERVAL Duration MINUTE))
-            OR (Start_Time BETWEEN NEW.Start_Time AND DATE_ADD(NEW.Start_Time, INTERVAL NEW.Duration MINUTE)));
+          AND NOT (NEW.Start_Time >= DATE_ADD(Start_Time, INTERVAL Duration MINUTE) OR 
+                   Start_Time >= DATE_ADD(NEW.Start_Time, INTERVAL NEW.Duration MINUTE));
         
         IF v_count > 0 THEN
             SIGNAL SQLSTATE '45000'
@@ -670,8 +670,8 @@ BEGIN
         FROM Performance
         WHERE Band_ID = NEW.Band_ID
           AND Performance_ID != NEW.Performance_ID
-          AND ((NEW.Start_Time BETWEEN Start_Time AND DATE_ADD(Start_Time, INTERVAL Duration MINUTE))
-            OR (Start_Time BETWEEN NEW.Start_Time AND DATE_ADD(NEW.Start_Time, INTERVAL NEW.Duration MINUTE)));
+          AND NOT (NEW.Start_Time >= DATE_ADD(Start_Time, INTERVAL Duration MINUTE) OR 
+                   Start_Time >= DATE_ADD(NEW.Start_Time, INTERVAL NEW.Duration MINUTE));
         
         IF v_count > 0 THEN
             SIGNAL SQLSTATE '45000'
@@ -1044,8 +1044,9 @@ BEFORE INSERT ON Rating
 FOR EACH ROW
 BEGIN
     DECLARE v_Ticket_Status_ID INT;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND 
+        SET v_Ticket_Status_ID = NULL;
     
-    -- Έλεγχος αν υπάρχει ενεργοποιημένο εισιτήριο για το Visitor και την Performance
     SELECT Ticket_Status_ID
     INTO v_Ticket_Status_ID
     FROM Ticket
@@ -1053,7 +1054,6 @@ BEGIN
       AND Event_ID = (SELECT Event_ID FROM Performance WHERE Performance_ID = NEW.Performance_ID)
     LIMIT 1;
 
-    -- Αν δεν βρέθηκε ή το εισιτήριο δεν είναι "used"
     IF v_Ticket_Status_ID IS NULL THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Visitor does not have a ticket for this performance.';

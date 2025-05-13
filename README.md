@@ -1,26 +1,75 @@
-Pulse University - Music Festival Database
+***Pulse University - Music Festival Database
 
 - Project Overview:
 
-Welcome to the "Pulse University" music festival database! This project is designed to manage all essential information related to the festival, including artists, schedules, tickets, venues, and more. 
-The goal is to create an efficient database structure that can support the seamless organization of a music festival.
+This MySQL database system manages a comprehensive music festival platform, handling artists, performances, ticket sales, and visitor interactions. The system includes robust features for scheduling, capacity management, ticket resales, and performance ratings.
 
-- Features:
+** Installation
+1. Connect to your MySQL server: mysql -u username -p
+2. Execute the installation script: mysql -u username -p < install.sql
 
-Artists: Manage the list of performers, including name, genre, and performance details.
+** Loading Sample Data
+1. Load the provided sample data: mysql -u username -p < sql/load.sql
+2. Sample data includes:
+50+ artists, 30+ stages, 100+ performances, 10+ festivals, 200+ tickets
 
-Schedule: Keep track of performance times, stages, and line-ups.
+--------------------------------------------------------------------------------
+**Database Structure
+The database contains the following main components:
 
-Tickets: Manage ticket sales, prices, and ticket holder details.
+Lookup Tables: Performance_Type, Continent, Experience_Level, Personnel_Role, Payment_Method, Ticket_Category, Ticket_Status, Resale_Status, Genre
 
-Venues: Manage the different festival venues (stages) and their capacity.
+Entity Tables: Artist, Band, Stage, Event, Performance, Visitor, Equipment, Location, Festival
 
-Attendees: Track festival-goers and their purchases.
+Relationship Tables: ArtistBand, PerformancePersonnel, StageEquipment, Artist_Genre
 
-- Technologies Used:
+Transaction Tables: Ticket, Resale, Rating, Resale_Queue, Resale_Buyer_Interest, Resale_Seller_Queue
+--------------------------------------------------------------------------------
 
-MariaDB: Relational database management system.
+** Key Features:
 
-PHP/Python: For backend interaction with the database.
+Performance Management:
 
-Front-end: HTML/CSS, JavaScript for interactive user interfaces.
+Prevents scheduling conflicts for artists/bands
+
+Enforces minimum 5-minute and maximum 30-minute breaks between performances
+
+Limits performance duration to 180 minutes
+
+Prevents artists/bands from performing for more than 3 consecutive years
+---------------------------
+
+Ticket System:
+
+Automatically limits tickets to stage capacity
+
+Restricts VIP tickets to 10% of total capacity
+
+Different pricing based on festival day
+
+Ticket scanning/validation for event entry
+---------------------------
+
+Resale Platform:
+
+Ticket resale queue with automatic matching
+
+Option to express interest in specific tickets or event/category combinations
+
+First-come-first-served matching algorithm
+---------------------------
+
+Rating System:
+
+Performance ratings from visitors
+
+Requires ticket to be used before submitting ratings
+
+Multiple rating dimensions (Artist Interpretation, Sound, Stage Presence, etc.)
+--------------------------------------------------------------------------------
+
+** System Requirements:
+
+- MySQL Server 5.7+ or MariaDB 10.3+
+- UTF-8 character set support
+- Minimum 100MB disk space
