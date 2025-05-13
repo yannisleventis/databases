@@ -298,16 +298,6 @@ CREATE TABLE Ticket (
     FOREIGN KEY (Ticket_Status_ID) REFERENCES Ticket_Status(Status_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table: Resale
-CREATE TABLE Resale (
-    Resale_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Ticket_ID INT UNSIGNED NOT NULL UNIQUE,
-    Listing_Date DATETIME NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (Resale_ID),
-    KEY idx_resale_ticket (Ticket_ID),
-    FOREIGN KEY (Ticket_ID) REFERENCES Ticket(Ticket_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- Table: Rating
@@ -334,18 +324,6 @@ CREATE TABLE Rating (
     CONSTRAINT chk_overall_impression CHECK (Overall_Impression BETWEEN 1 AND 5)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-
--- Table: Resale queue
-CREATE TABLE Resale_Queue (
-    Resale_Queue_ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    Ticket_ID INT UNSIGNED NOT NULL,
-    Listed_Date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    Sale_Status_ID INT UNSIGNED NOT NULL,
-    PRIMARY KEY (Resale_Queue_ID),
-    FOREIGN KEY (Ticket_ID) REFERENCES Ticket(Ticket_ID),
-    FOREIGN KEY (Sale_Status_ID) REFERENCES Resale_Status(Status_ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -1021,17 +999,7 @@ END //
 DELIMITER ;
 
 
--- Trigger όταν ένας νέος αγοραστής εκδηλώνει ενδιαφέρον
-DELIMITER //
 
-CREATE TRIGGER trg_auto_match_after_buyer
-AFTER INSERT ON Resale_Buyer_Interest
-FOR EACH ROW
-BEGIN
-    CALL match_resale(NULL);
-END //
-
-DELIMITER ;
 
 
 -- Check that rating matches a used ticket
@@ -1214,10 +1182,6 @@ BEGIN
         -- Αν είναι ενεργό (active), τότε καταχωρείται στη Resale Queue
         INSERT INTO Resale_Queue (Ticket_ID, Sale_Status_ID)
         VALUES (p_Ticket_ID, v_Available_Status_ID);
-        
-        -- Also insert into seller queue
-        INSERT INTO Resale_Seller_Queue (Ticket_ID, Sale_Status_ID)
-        VALUES (p_Ticket_ID, v_Available_Status_ID);
     END IF;
 END //
 
@@ -1312,10 +1276,6 @@ BEGIN
             SET Sale_Status_ID = (SELECT Status_ID FROM Resale_Status WHERE Status_Name = 'sold')
             WHERE Ticket_ID = p_Ticket_ID;
 
-            -- Αν υπάρχει και στη Resale Queue update
-            UPDATE Resale_Queue
-            SET Sale_Status_ID = (SELECT Status_ID FROM Resale_Status WHERE Status_Name = 'sold')
-            WHERE Ticket_ID = p_Ticket_ID;
 
             -- Σβήσε τον αγοραστή
             DELETE FROM Resale_Buyer_Interest
@@ -1360,9 +1320,6 @@ BEGIN
                 SET Sale_Status_ID = (SELECT Status_ID FROM Resale_Status WHERE Status_Name = 'sold')
                 WHERE Seller_Queue_ID = v_Seller_Queue_ID;
 
-                UPDATE Resale_Queue
-                SET Sale_Status_ID = (SELECT Status_ID FROM Resale_Status WHERE Status_Name = 'sold')
-                WHERE Ticket_ID = v_Ticket_ID;
 
                 -- Σβήσε τον αγοραστή
                 DELETE FROM Resale_Buyer_Interest
