@@ -203,7 +203,10 @@ CREATE TABLE Festival (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 -- Each year can have only 1 pulse university festival.
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 -- Alter Table: Festival (add Start_Year), to be used for unique constraint
