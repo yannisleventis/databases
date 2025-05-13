@@ -1,4 +1,4 @@
-***Pulse University - Music Festival Database
+*** Pulse University - Music Festival Database
 
 - Project Overview:
 
