@@ -199,10 +199,15 @@ CREATE TABLE Festival (
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (Festival_ID),
     FOREIGN KEY (Location_ID) REFERENCES Location(Location_ID),
-    UNIQUE KEY uq_festival_year (Start_Date),
-    -- Each year can have only 1 pulse university festival.
-    KEY idx_festival_year (Start_Date)
+    KEY idx_festival_date (Start_Date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Each year can have only 1 pulse university festival.
+-- Alter Table: Festival (add Start_Year), to be used for unique constraint
+ALTER TABLE Festival
+ADD COLUMN Start_Year INT GENERATED ALWAYS AS (YEAR(Start_Date)) STORED,
+ADD UNIQUE KEY uq_festival_year (Start_Year);
+
 
 -- Table: Event
 CREATE TABLE Event (
@@ -227,7 +232,7 @@ CREATE TABLE Performance (
     Performance_Type_ID INT UNSIGNED NOT NULL,
     Start_Time DATETIME NOT NULL,
     Duration INT NOT NULL CHECK (Duration <= 180),
-    Break_Duration INT,
+    Break_Duration INT CHECK (Break_Duration BETWEEN 5 AND 30),
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (Performance_ID),
     KEY idx_performance_event (Event_ID),
@@ -374,7 +379,9 @@ CREATE TABLE Image (
     KEY idx_image_entity (Entity_ID, Entity_Type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 -- Triggers
+
 
 -- Festivals & Performances cannot be canceled
 
@@ -493,6 +500,7 @@ END //
 
 
 DELIMITER ;
+
 
 -- Each performance must have an artist/band
 
@@ -1146,10 +1154,6 @@ BEGIN
 END //
 
 DELIMITER ;
-
-
--- Stored procedure for securite/attendance in a performance
-
 
 
 
