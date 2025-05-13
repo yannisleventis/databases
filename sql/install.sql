@@ -244,6 +244,14 @@ CREATE TABLE Performance (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+-- Alter Table: Performance (add Artist and Band)
+ALTER TABLE Performance
+ADD COLUMN Artist_ID INT UNSIGNED NULL,
+ADD COLUMN Band_ID INT UNSIGNED NULL,
+ADD CONSTRAINT fk_Performance_Artist FOREIGN KEY (Artist_ID) REFERENCES Artist(Artist_ID),
+ADD CONSTRAINT fk_Performance_Band FOREIGN KEY (Band_ID) REFERENCES Band(Band_ID);
+
+
 -- Table: StageEquipment
 CREATE TABLE StageEquipment (
     Stage_ID INT UNSIGNED NOT NULL,
@@ -267,12 +275,6 @@ CREATE TABLE PerformancePersonnel (
     FOREIGN KEY (Personnel_ID) REFERENCES Personnel(Personnel_ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Alter Table: Performance (add Artist and Band)
-ALTER TABLE Performance
-ADD COLUMN Artist_ID INT UNSIGNED NULL,
-ADD COLUMN Band_ID INT UNSIGNED NULL,
-ADD CONSTRAINT fk_Performance_Artist FOREIGN KEY (Artist_ID) REFERENCES Artist(Artist_ID),
-ADD CONSTRAINT fk_Performance_Band FOREIGN KEY (Band_ID) REFERENCES Band(Band_ID);
 
 -- If sold out: Start resale
 
