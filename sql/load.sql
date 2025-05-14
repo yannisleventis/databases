@@ -7032,12 +7032,12 @@ VALUES
 INSERT INTO Performance
  (Event_ID, Stage_ID, Performance_Type_ID, Start_Time, Duration, Break_Duration, Artist_ID)
 VALUES
-('2', '11', '1', '2027-08-30 13:00:00', '111', '9', '1')
+('2', '11', '1', '2027-08-30 13:00:00', '111', '9', '42')
 ;
 INSERT INTO Performance
  (Event_ID, Stage_ID, Performance_Type_ID, Start_Time, Duration, Break_Duration, Artist_ID)
 VALUES
-('3', '24', '1', '2027-08-31 13:00:00', '130', '5', '25')
+('3', '24', '1', '2027-08-31 13:00:00', '130', '5', '42')
 ;
 INSERT INTO Performance
  (Event_ID, Stage_ID, Performance_Type_ID, Start_Time, Duration, Break_Duration, Artist_ID)
@@ -7447,7 +7447,7 @@ VALUES
 INSERT INTO Performance
  (Event_ID, Stage_ID, Performance_Type_ID, Start_Time, Duration, Break_Duration, Artist_ID)
 VALUES
-('30', '3', '1', '2018-01-26 13:00:00', '164', '7', '28')
+('30', '3', '1', '2018-01-26 13:00:00', '164', '7', '47')
 ;
 INSERT INTO Performance
  (Event_ID, Stage_ID, Performance_Type_ID, Start_Time, Duration, Break_Duration, Artist_ID)
@@ -7457,7 +7457,7 @@ VALUES
 INSERT INTO Performance
  (Event_ID, Stage_ID, Performance_Type_ID, Start_Time, Duration, Break_Duration, Artist_ID)
 VALUES
-('30', '3', '1', '2018-01-26 16:46:00', '76', '6', '19')
+('30', '3', '1', '2018-01-26 16:46:00', '76', '6', '47')
 ;
 INSERT INTO Performance
  (Event_ID, Stage_ID, Performance_Type_ID, Start_Time, Duration, Break_Duration, Artist_ID)
