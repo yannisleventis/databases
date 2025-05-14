@@ -1,4 +1,5 @@
--- For original query
+use musicfestival;
+
 EXPLAIN FORMAT=JSON 
 SELECT 
     a.Artist_ID,

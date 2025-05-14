@@ -8,23 +8,25 @@
 <body>
   <h1>Select a query to run</h1>
 
+  <!-- Drop-down + Run button (uses slug) -->
   <form action="/queries" method="POST">
-    <select name="queryId" required>
+    <select name="querySlug" required>
       <% queries.forEach(q => { %>
-        <option value="<%= q.id %>"><%= q.title %></option>
+        <option value="<%= q.slug %>"><%= q.title %></option>
       <% }) %>
     </select>
-
     <button type="submit">Run</button>
   </form>
 
-  <p style="margin-top:2rem">
-    or click a link:
-    <ul>
-      <% queries.forEach(q => { %>
-        <li><a href="/queries/<%= q.id %>"><%= q.title %></a></li>
-      <% }) %>
-    </ul>
-  </p>
+  <!-- OR click a button directly -->
+  <p style="margin-top:2rem">or click a button:</p>
+
+  <% queries.forEach(q => { %>
+    <form method="POST" action="/queries" style="display:inline-block">
+      <input type="hidden" name="querySlug" value="<%= q.slug %>">
+      <button type="submit"><%= q.title %></button>
+    </form>
+    <br><br><!-- two new lines after each button -->
+  <% }) %>
 </body>
 </html>

@@ -1,4 +1,5 @@
--- Forces join order: Artist → Performance → Rating
+use musicfestival;
+
 SELECT STRAIGHT_JOIN
     a.Artist_ID,
     CONCAT(a.First_Name, ' ', a.Last_Name) AS Artist_Name,

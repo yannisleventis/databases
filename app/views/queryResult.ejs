@@ -10,12 +10,10 @@
   </style>
 </head>
 <body>
-  <h1><%= query.title %></h1>
+  <h2><%= query.title %></h2>
 
-  <% if (rows.length === 0) { %>
-    <p>No results.</p>
-  <% } else { %>
-    <table>
+  <% if (rows.length > 0) { %>
+    <table border="1" cellpadding="8" cellspacing="0">
       <thead>
         <tr>
           <% Object.keys(rows[0]).forEach(col => { %>
@@ -24,17 +22,19 @@
         </tr>
       </thead>
       <tbody>
-        <% rows.forEach(r => { %>
+        <% rows.forEach(row => { %>
           <tr>
-            <% Object.values(r).forEach(v => { %>
-              <td><%= v %></td>
+            <% Object.values(row).forEach(val => { %>
+              <td><%= val %></td>
             <% }) %>
           </tr>
         <% }) %>
       </tbody>
     </table>
+  <% } else { %>
+    <p><em>No results returned for this query.</em></p>
   <% } %>
-
+  
   <p><a href="/queries">&larr; Back to queries</a></p>
 </body>
 </html>

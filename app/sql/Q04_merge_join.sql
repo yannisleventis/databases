@@ -1,4 +1,5 @@
--- Using merge join hints (MySQL 8.0+)
+use musicfestival;
+
 SELECT /*+ MERGE_JOIN(a, p, r) */
     a.Artist_ID,
     CONCAT(a.First_Name, ' ', a.Last_Name) AS Artist_Name,
