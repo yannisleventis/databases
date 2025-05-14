@@ -1,84 +1,105 @@
 -- Original Query Results
 
-Visitor_ID	Visitor_Name	Performance_ID	Performer	Performance_Type	Start_Time   	Stage_ID	Event_Name	Avg_Artist_Interpretation	Avg_Sound_Lighting	Avg_Stage_Presence	Avg_Organization	Avg_Overall_Impression	Overall_Average	Rating_Count	Visitor_ID	Visitor_Name	Performance_ID	Performer	Performance_Type	Start_Time	Stage_ID	Event_Name	Avg_Artist_Interpretation	Avg_Sound_Lighting	Avg_Stage_Presence	Avg_Organization	Avg_Overall_Impression	Overall_Average	Rating_Count	Visitor_ID	Visitor_Name	Performance_ID	Performer	Performance_Type	Start_Time   	Stage_ID	Event_Name	Avg_Artist_Interpretation	Avg_Sound_Lighting	Avg_Stage_Presence	Avg_Organization	Avg_Overall_Impression	Overall_Average	Rating_Count	
-69	Samantha Brown	49	Tiffany Monroe	Special guest	2025-06-11 17:47:00	25	responsibilityEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-69	Samantha Brown	48	Katelyn Montgomery	warm up	2025-06-11 16:00:00	25	responsibilityEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-69	Samantha Brown	39	Jeffrey Pratt	warm up	2025-06-08 20:00:00	12	amountEvent	5.0000	4.0000	5.0000	4.0000	5.0000	4.60	1	
-69	Samantha Brown	38	David Wilson	headline	2025-06-08 18:29:00	12	amountEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-69	Samantha Brown	37	Patrick Frank	warm up	2025-06-08 16:00:00	12	amountEvent	1.0000	3.0000	4.0000	4.0000	1.0000	2.60	1	
-69	Samantha Brown	54	Susan Hughes	Special guest	2025-02-10 20:53:00	17	decideEvent	2.0000	1.0000	3.0000	5.0000	1.0000	2.40	1	
-69	Samantha Brown	53	Katherine Mooney	Special guest	2025-02-10 19:45:00	17	decideEvent	1.0000	5.0000	1.0000	2.0000	3.0000	2.40	1	
-69	Samantha Brown	52	James Wilson	Special guest	2025-02-10 16:37:00	17	decideEvent	3.0000	1.0000	3.0000	3.0000	5.0000	3.00	1	
-69	Samantha Brown	51	Melissa Yates	Special guest	2025-02-10 14:00:00	17	decideEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+Visitor_ID	Visitor_Name	Performance_ID	Performer	Performance_Type	Start_Time   	Stage_ID	Event_Name	Avg_Artist_Interpretation	Avg_Sound_Lighting	Avg_Stage_Presence	Avg_Organization	Avg_Overall_Impression	Overall_Average	Rating_Count	Visitor_ID	Visitor_Name	Performance_ID	Performer	Performance_Type	Start_Time	Stage_ID	Event_Name	Avg_Artist_Interpretation	Avg_Sound_Lighting	Avg_Stage_Presence	Avg_Organization	Avg_Overall_Impression	Overall_Average	Rating_Count	Visitor_ID	Visitor_Name	Performance_ID	Performer	Performance_Type	Start_Time   	Stage_ID	Event_Name	Avg_Artist_Interpretation	Avg_Sound_Lighting	Avg_Stage_Presence	Avg_Organization	Avg_Overall_Impression	Overall_Average	Rating_Count	Visitor_ID	Visitor_Name	Performance_ID	Performer	Performance_Type	Start_Time   	Stage_ID	Event_Name	Avg_Artist_Interpretation	Avg_Sound_Lighting	Avg_Stage_Presence	Avg_Organization	Avg_Overall_Impression	Overall_Average	Rating_Count	Visitor_ID	Visitor_Name	Performance_ID	Performer	Performance_Type	Start_Time   	Stage_ID	Event_Name	Avg_Artist_Interpretation	Avg_Sound_Lighting	Avg_Stage_Presence	Avg_Organization	Avg_Overall_Impression	Overall_Average	Rating_Count	
+69	Lawrence Myers	40	Joseph Pruitt	Special guest	2024-12-28 16:46:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	39	William Ortega	Special guest	2024-12-28 14:51:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	38	Michael Bullock	warm up	2024-12-28 14:00:00	17	drugEvent	4.0000	2.0000	3.0000	2.0000	5.0000	3.20	1	
+10	0.00061180	SHOW INDEXES FROM `musicfestival`.`Artist`	
+11	0.01677850	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+12	0.00030890	SHOW CREATE TABLE `musicfestival`.`Artist`	
+13	0.00634800	SHOW FULL COLUMNS FROM `musicfestival`.`Visitor`	
+14	0.00225080	SHOW INDEXES FROM `musicfestival`.`Visitor`	
+15	0.01573460	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+16	0.00591210	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+17	0.00590770	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+18	0.00710920	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+19	0.00568330	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+20	0.00600110	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+21	0.00086360	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+22	0.00077270	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+23	0.00076550	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+24	0.00017900	SELECT DATABASE()	
 
-9	0.00038570	SHOW  COLUMNS FROM `musicfestival`.	
-10	0.00019120	SHOW INDEXES FROM `musicfestival`.	
-11	0.00056550	SHOW CREATE TABLE `musicfestival`.`v`	
-12	0.00681900	SHOW FULL COLUMNS FROM `musicfestival`.`Visitor`	
-13	0.00090450	SHOW INDEXES FROM `musicfestival`.`Visitor`	
-14	0.01599090	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-15	0.00544870	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-16	0.00535570	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-17	0.00443310	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-18	0.00533800	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-19	0.00683640	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-20	0.00089390	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
-21	0.00085400	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
-22	0.00083820	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
-23	0.00018830	SELECT DATABASE()	
+-- Force Join Results
 
--- Force Index Results
-
-69	Samantha Brown	49	Tiffany Monroe	Special guest	2025-06-11 17:47:00	25	responsibilityEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-69	Samantha Brown	48	Katelyn Montgomery	warm up	2025-06-11 16:00:00	25	responsibilityEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-69	Samantha Brown	39	Jeffrey Pratt	warm up	2025-06-08 20:00:00	12	amountEvent	5.0000	4.0000	5.0000	4.0000	5.0000	4.60	1	
-69	Samantha Brown	38	David Wilson	headline	2025-06-08 18:29:00	12	amountEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-69	Samantha Brown	37	Patrick Frank	warm up	2025-06-08 16:00:00	12	amountEvent	1.0000	3.0000	4.0000	4.0000	1.0000	2.60	1	
-69	Samantha Brown	54	Susan Hughes	Special guest	2025-02-10 20:53:00	17	decideEvent	2.0000	1.0000	3.0000	5.0000	1.0000	2.40	1	
-69	Samantha Brown	53	Katherine Mooney	Special guest	2025-02-10 19:45:00	17	decideEvent	1.0000	5.0000	1.0000	2.0000	3.0000	2.40	1	
-69	Samantha Brown	52	James Wilson	Special guest	2025-02-10 16:37:00	17	decideEvent	3.0000	1.0000	3.0000	3.0000	5.0000	3.00	1	
-69	Samantha Brown	51	Melissa Yates	Special guest	2025-02-10 14:00:00	17	decideEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-
-32	0.00016510	SHOW WARNINGS	
-33	0.00012990	SHOW  COLUMNS FROM `musicfestival`.	
-34	0.00010930	SHOW INDEXES FROM `musicfestival`.	
-35	0.00029570	SHOW CREATE TABLE `musicfestival`.`v`	
-36	0.01822800	SHOW FULL COLUMNS FROM `musicfestival`.`Visitor`	
-37	0.00617760	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-38	0.00603840	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-39	0.00573890	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-40	0.00644510	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-41	0.00580350	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-42	0.00614020	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-43	0.00214870	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
-44	0.00128980	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
-45	0.00127860	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
-46	0.00028180	SELECT DATABASE()	
+69	Lawrence Myers	40	Joseph Pruitt	Special guest	2024-12-28 16:46:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	39	William Ortega	Special guest	2024-12-28 14:51:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	38	Michael Bullock	warm up	2024-12-28 14:00:00	17	drugEvent	4.0000	2.0000	3.0000	2.0000	5.0000	3.20	1	
+33	0.00015040	SHOW WARNINGS	
+34	0.00672470	SHOW  COLUMNS FROM `musicfestival`.`Artist`	
+35	0.00500880	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+36	0.00020310	SHOW CREATE TABLE `musicfestival`.`Artist`	
+37	0.00559480	SHOW FULL COLUMNS FROM `musicfestival`.`Visitor`	
+38	0.00583480	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+39	0.00642300	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+40	0.01663800	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+41	0.00571520	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+42	0.01889510	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+43	0.00618750	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+44	0.00092450	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+45	0.00136930	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+46	0.00132010	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+47	0.00029320	SELECT DATABASE()	
 
 -- Straight Join Results
 
-69	Samantha Brown	49	Tiffany Monroe	Special guest	2025-06-11 17:47:00	25	responsibilityEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-69	Samantha Brown	48	Katelyn Montgomery	warm up	2025-06-11 16:00:00	25	responsibilityEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-69	Samantha Brown	39	Jeffrey Pratt	warm up	2025-06-08 20:00:00	12	amountEvent	5.0000	4.0000	5.0000	4.0000	5.0000	4.60	1	
-69	Samantha Brown	38	David Wilson	headline	2025-06-08 18:29:00	12	amountEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
-69	Samantha Brown	37	Patrick Frank	warm up	2025-06-08 16:00:00	12	amountEvent	1.0000	3.0000	4.0000	4.0000	1.0000	2.60	1	
-69	Samantha Brown	54	Susan Hughes	Special guest	2025-02-10 20:53:00	17	decideEvent	2.0000	1.0000	3.0000	5.0000	1.0000	2.40	1	
-69	Samantha Brown	53	Katherine Mooney	Special guest	2025-02-10 19:45:00	17	decideEvent	1.0000	5.0000	1.0000	2.0000	3.0000	2.40	1	
-69	Samantha Brown	52	James Wilson	Special guest	2025-02-10 16:37:00	17	decideEvent	3.0000	1.0000	3.0000	3.0000	5.0000	3.00	1	
-69	Samantha Brown	51	Melissa Yates	Special guest	2025-02-10 14:00:00	17	decideEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	40	Joseph Pruitt	Special guest	2024-12-28 16:46:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	39	William Ortega	Special guest	2024-12-28 14:51:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	38	Michael Bullock	warm up	2024-12-28 14:00:00	17	drugEvent	4.0000	2.0000	3.0000	2.0000	5.0000	3.20	1	
+56	0.00020310	SHOW WARNINGS	
+57	0.00947620	SHOW  COLUMNS FROM `musicfestival`.`Artist`	
+58	0.00659580	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+59	0.00021130	SHOW CREATE TABLE `musicfestival`.`Artist`	
+60	0.00626970	SHOW FULL COLUMNS FROM `musicfestival`.`Visitor`	
+61	0.00945620	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+62	0.00572700	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+63	0.00487480	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+64	0.00625700	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+65	0.00439960	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+66	0.00489770	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+67	0.00086280	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+68	0.00079720	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+69	0.00080050	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+70	0.00021140	SELECT DATABASE()	
 
-55	0.00018210	SHOW WARNINGS	
-56	0.00012590	SHOW  COLUMNS FROM `musicfestival`.	
-57	0.00011310	SHOW INDEXES FROM `musicfestival`.	
-58	0.00041310	SHOW CREATE TABLE `musicfestival`.`v`	
-59	0.01820970	SHOW FULL COLUMNS FROM `musicfestival`.`Visitor`	
-60	0.01865220	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-61	0.00575830	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-62	0.00615410	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-63	0.00518750	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-64	0.00523200	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-65	0.00636760	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
-66	0.00091170	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
-67	0.00123930	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
-68	0.00271370	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
-69	0.00031880	SELECT DATABASE()	
+-- Merge Join Results
+
+69	Lawrence Myers	40	Joseph Pruitt	Special guest	2024-12-28 16:46:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	39	William Ortega	Special guest	2024-12-28 14:51:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	38	Michael Bullock	warm up	2024-12-28 14:00:00	17	drugEvent	4.0000	2.0000	3.0000	2.0000	5.0000	3.20	1	
+79	0.00014010	SHOW WARNINGS	
+80	0.00967970	SHOW  COLUMNS FROM `musicfestival`.`Artist`	
+81	0.00582880	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+82	0.00020570	SHOW CREATE TABLE `musicfestival`.`Artist`	
+83	0.00612420	SHOW FULL COLUMNS FROM `musicfestival`.`Visitor`	
+84	0.01526780	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+85	0.00663490	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+86	0.00552250	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+87	0.00474090	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+88	0.00460440	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+89	0.00487280	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+90	0.00155730	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+91	0.00100460	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+92	0.00083380	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+93	0.00020520	SELECT DATABASE()	
+
+-- Hash Join Results
+
+69	Lawrence Myers	40	Joseph Pruitt	Special guest	2024-12-28 16:46:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	39	William Ortega	Special guest	2024-12-28 14:51:00	17	drugEvent	NULL	NULL	NULL	NULL	NULL	NULL	0	
+69	Lawrence Myers	38	Michael Bullock	warm up	2024-12-28 14:00:00	17	drugEvent	4.0000	2.0000	3.0000	2.0000	5.0000	3.20	1	
+102	0.00017580	SHOW WARNINGS	
+103	0.00956000	SHOW  COLUMNS FROM `musicfestival`.`Artist`	
+104	0.01728590	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+105	0.00027450	SHOW CREATE TABLE `musicfestival`.`Artist`	
+106	0.00562260	SHOW FULL COLUMNS FROM `musicfestival`.`Visitor`	
+107	0.02409550	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+108	0.00611360	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+109	0.01822230	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+110	0.00650710	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+111	0.00601120	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+112	0.00614630	SELECT TABLE_NAME FROM information_schema.VIEWS WH...	
+113	0.00152080	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+114	0.00180520	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+115	0.00086040	SHOW SESSION VARIABLES LIKE 'FOREIGN_KEY_CHECKS'	
+116	0.00025270	SELECT DATABASE()	

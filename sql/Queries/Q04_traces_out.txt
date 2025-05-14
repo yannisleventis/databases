@@ -1,3 +1,5 @@
+-- Original Query
+
 {
   "query_block": {
     "select_id": 1,
@@ -32,7 +34,175 @@
       "key_length": "4",
       "used_key_parts": ["Performance_ID"],
       "ref": ["musicfestival.p.Performance_ID"],
-      "rows": 20,
+      "rows": 1,
+      "filtered": 100
+    }
+  }
+}	
+
+-- Force Index
+
+{
+  "query_block": {
+    "select_id": 1,
+    "table": {
+      "table_name": "a",
+      "access_type": "const",
+      "possible_keys": ["PRIMARY"],
+      "key": "PRIMARY",
+      "key_length": "4",
+      "used_key_parts": ["Artist_ID"],
+      "ref": ["const"],
+      "rows": 1,
+      "filtered": 100
+    },
+    "table": {
+      "table_name": "p",
+      "access_type": "ref",
+      "possible_keys": ["fk_Performance_Artist"],
+      "key": "fk_Performance_Artist",
+      "key_length": "5",
+      "used_key_parts": ["Artist_ID"],
+      "ref": ["const"],
+      "rows": 1,
+      "filtered": 100,
+      "using_index": true
+    },
+    "table": {
+      "table_name": "r",
+      "access_type": "ref",
+      "possible_keys": ["idx_rating_performance"],
+      "key": "idx_rating_performance",
+      "key_length": "4",
+      "used_key_parts": ["Performance_ID"],
+      "ref": ["musicfestival.p.Performance_ID"],
+      "rows": 1,
+      "filtered": 100
+    }
+  }
+}	
+
+-- Straight Join
+
+{
+  "query_block": {
+    "select_id": 1,
+    "table": {
+      "table_name": "a",
+      "access_type": "const",
+      "possible_keys": ["PRIMARY"],
+      "key": "PRIMARY",
+      "key_length": "4",
+      "used_key_parts": ["Artist_ID"],
+      "ref": ["const"],
+      "rows": 1,
+      "filtered": 100
+    },
+    "table": {
+      "table_name": "p",
+      "access_type": "ref",
+      "possible_keys": ["PRIMARY", "fk_Performance_Artist"],
+      "key": "fk_Performance_Artist",
+      "key_length": "5",
+      "used_key_parts": ["Artist_ID"],
+      "ref": ["const"],
+      "rows": 1,
+      "filtered": 100,
+      "using_index": true
+    },
+    "table": {
+      "table_name": "r",
+      "access_type": "ref",
+      "possible_keys": ["idx_rating_performance"],
+      "key": "idx_rating_performance",
+      "key_length": "4",
+      "used_key_parts": ["Performance_ID"],
+      "ref": ["musicfestival.p.Performance_ID"],
+      "rows": 1,
+      "filtered": 100
+    }
+  }
+}	
+
+-- Merge Join
+
+{
+  "query_block": {
+    "select_id": 1,
+    "table": {
+      "table_name": "a",
+      "access_type": "const",
+      "possible_keys": ["PRIMARY"],
+      "key": "PRIMARY",
+      "key_length": "4",
+      "used_key_parts": ["Artist_ID"],
+      "ref": ["const"],
+      "rows": 1,
+      "filtered": 100
+    },
+    "table": {
+      "table_name": "p",
+      "access_type": "ref",
+      "possible_keys": ["PRIMARY", "fk_Performance_Artist"],
+      "key": "fk_Performance_Artist",
+      "key_length": "5",
+      "used_key_parts": ["Artist_ID"],
+      "ref": ["const"],
+      "rows": 1,
+      "filtered": 100,
+      "using_index": true
+    },
+    "table": {
+      "table_name": "r",
+      "access_type": "ref",
+      "possible_keys": ["idx_rating_performance"],
+      "key": "idx_rating_performance",
+      "key_length": "4",
+      "used_key_parts": ["Performance_ID"],
+      "ref": ["musicfestival.p.Performance_ID"],
+      "rows": 1,
+      "filtered": 100
+    }
+  }
+}
+
+-- Hash Join
+
+{
+  "query_block": {
+    "select_id": 1,
+    "table": {
+      "table_name": "a",
+      "access_type": "const",
+      "possible_keys": ["PRIMARY"],
+      "key": "PRIMARY",
+      "key_length": "4",
+      "used_key_parts": ["Artist_ID"],
+      "ref": ["const"],
+      "rows": 1,
+      "filtered": 100
+    },
+    "table": {
+      "table_name": "p",
+      "access_type": "ref",
+      "possible_keys": ["PRIMARY", "fk_Performance_Artist"],
+      "key": "fk_Performance_Artist",
+      "key_length": "5",
+      "used_key_parts": ["Artist_ID"],
+      "ref": ["const"],
+      "rows": 1,
+      "filtered": 100,
+      "using_index": true
+    },
+    "table": {
+      "table_name": "r",
+      "access_type": "ref",
+      "possible_keys": ["idx_rating_performance"],
+      "key": "idx_rating_performance",
+      "key_length": "4",
+      "used_key_parts": ["Performance_ID"],
+      "ref": ["musicfestival.p.Performance_ID"],
+      "rows": 1,
       "filtered": 100
     }
   }
